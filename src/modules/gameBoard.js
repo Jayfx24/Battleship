@@ -1,5 +1,3 @@
-import { createShip } from './ship.js';
-
 export function gameBoard() {
     let [row, col] = [10, 10];
     // let missedShots = new Set()

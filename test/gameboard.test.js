@@ -1,9 +1,3 @@
-// Gameboards should be able to place ships at specific coordinates by calling the ship factory or class.
-// Gameboards should have a receiveAttack function that takes a pair of coordinates,
-//  determines whether or not the attack hit a ship and then
-// Gameboards should keep track of missed attacks so they can display them properly.
-// Gameboards should be able to report whether or not all of their ships have been sunk.
-
 import { gameBoard } from '../src/modules/gameBoard';
 import { createShip } from '../src/modules/ship';
 
