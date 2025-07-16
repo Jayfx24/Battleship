@@ -1,6 +1,6 @@
 export function gameBoard() {
     let [row, col] = [10, 10];
-    // let missedShots = new Set()
+    
     let board = Array.from({ length: row }, () => Array(col).fill(''));
 
     function findAllShips(arr = board, i = 0, shipSet = new Set()) {
@@ -39,6 +39,7 @@ export function gameBoard() {
 
             if (board[xCor][yCor] === 'X' || board[xCor][yCor] === 0)
                 throw new Error('Can not hit the same coordinate twice');
+            
             if (board[xCor][yCor] !== '') {
                 let shipHit = board[xCor][yCor];
                 shipHit.hit();

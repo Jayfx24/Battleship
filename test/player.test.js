@@ -1,6 +1,5 @@
 import { Player } from '../src/modules/player';
 import { gameBoard } from '../src/modules/gameBoard';
-import { createShip } from '../src/modules/ship';
 
 describe('Player class test', () => {
     beforeEach(() => {
@@ -11,13 +10,15 @@ describe('Player class test', () => {
     });
 
     test('initialize valid Player instance', () => {
-        expect(aiPlayer.gameBoard).toBeInstanceOf(gameBoard);
+        expect(aiPlayer.gameBoard).toHaveProperty('placeShip');
+        expect(aiPlayer.gameBoard).toHaveProperty('isAllShipSunk');
         expect(aiPlayer.type).toBe('computer');
         expect(aiPlayer.playerName).toBe('Test1');
     });
 
     test('initialize real type of Player instance', () => {
-        expect(realPlayer.gameBoard).toBeInstanceOf(gameBoard);
+        expect(realPlayer.gameBoard).toHaveProperty('placeShip');
+        expect(realPlayer.gameBoard).toHaveProperty('isAllShipSunk');
         expect(realPlayer.type).toBe('real');
         expect(realPlayer.playerName).toBe('James');
     });

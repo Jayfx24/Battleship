@@ -1,3 +1,62 @@
+:root{
+  --size : 2rem;
+}
+
+
 * {
-  background-color: black;
+  /* background-color: black; */
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body,html{
+  height: 100%;
+}
+
+main{
+}
+
+.wrapper{
+  min-height: 100vh;
+ 
+
+}
+.cor{
+  width: var(--size);
+  height: var(--size);
+  border: 1px solid;
+  position: relative;
+}
+
+.board-wrapper{
+  display: flex;
+  gap: 1rem;
+  width: 80%;
+  justify-content: center;
+  margin-block: auto;
+  margin-inline: auto;
+}
+.board-one,.board-two{
+  display: flex;
+  flex-wrap: wrap;
+  width: calc(var(--size) * 10);
+  max-width: fit-content;
+}
+
+.ship,.ship-hit,.missed{
+  width:100%;
+  height:100%;
+  position: relative;
+  z-index: -1;
+}
+.ship{
+  background-color: green;
+}
+.ship-hit{
+  background-color: red;
+  
+}
+.missed{
+  background-color: lightblue;
 }
