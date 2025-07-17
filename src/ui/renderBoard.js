@@ -1,12 +1,13 @@
 import { Player } from '../modules/player.js';
 import { gameBoard } from '../modules/gameBoard.js';
 import { createShip } from '../modules/ship';
-import { domController } from './domController.js';
+import { domController,createForm,component } from './domController.js';
 import { gameUtils } from '../modules/gameUtils.js';
 
-export const component = {
-    // boardWrapper: document.querySelector('.board-wrapper'),
-};
+
+
+
+
 export function createBoardUI(board, parent) {
     if (!Array.isArray(board)) return;
 
@@ -45,6 +46,10 @@ const playerOne = new Player('James', playerOneBoard);
 const playerTwoBoard = gameBoard();
 const playerTwo = new Player('Adams', playerTwoBoard);
 
+// domController.playerOneInfo.textContent = playerOne.playerName || 'Player-One';
+// domController.playerTwoInfo.textContent =
+//     playerTwo.type === 'real' ? playerTwo.playerName || 'Player Two' : 'AI';
+
 function placeShip(player) {
     const ships = {
         Battleship: 4,
@@ -61,48 +66,50 @@ function placeShip(player) {
         const isVertical = orientation === 'vertical';
         player.gameBoard.placeShip(ship, xCor, yCor, isVertical);
     });
+    utils.clearShipPos();
 }
 
+placeShip(playerOne);
 placeShip(playerTwo);
-let battleShip = createShip('Battleship', 4);
-let carrier = createShip('Carrier', 5);
-let Destroyer = createShip('Destroyer', 3);
-let submarine = createShip('submarine', 3);
-let patrolBoat = createShip('Patrol bOat', 2);
+// let battleShip = createShip('Battleship', 4);
+// let carrier = createShip('Carrier', 5);
+// let Destroyer = createShip('Destroyer', 3);
+// let submarine = createShip('submarine', 3);
+// let patrolBoat = createShip('Patrol bOat', 2);
 
-playerOne.gameBoard.placeShip(battleShip, 0, 0);
-playerOne.gameBoard.placeShip(carrier, 0, 1);
-playerOne.gameBoard.placeShip(Destroyer, 0, 2);
-playerOne.gameBoard.placeShip(submarine, 0, 3);
-playerOne.gameBoard.placeShip(patrolBoat, 0, 4);
+// playerOne.gameBoard.placeShip(battleShip, 0, 0);
+// playerOne.gameBoard.placeShip(carrier, 0, 1);
+// playerOne.gameBoard.placeShip(Destroyer, 0, 2);
+// playerOne.gameBoard.placeShip(submarine, 0, 3);
+// playerOne.gameBoard.placeShip(patrolBoat, 0, 4);
 
 let currentPlayer = playerOne;
-let activeBoard = domController.boardTwo;
+let activeBoard;
 
 export function game() {
     domController.boardOne.innerHTML = '';
     domController.boardTwo.innerHTML = '';
     createBoardUI(playerOne.gameBoard.getBoard(), domController.boardOne);
     createBoardUI(playerTwo.gameBoard.getBoard(), domController.boardTwo);
+    loadPrompt(); // temp location
     gameTurn();
     domController.boardWrapper.addEventListener('click', handleBoxClick);
 }
 
 export function handleBoxClick(e) {
     const target = e.target;
-    const cor = target.closest('.cor')
+    const cor = target.closest('.cor');
     if (!cor) return;
-    if (cor.querySelector('.missed')||cor.querySelector('.ship-hit')) return;
+    if (cor.querySelector('.missed') || cor.querySelector('.ship-hit')) return;
     if (!cor.closest(`.${activeBoard.className}`)) return;
     // send Cor
     const xCor = target.dataset.xCor;
     const yCor = target.dataset.yCor;
-    console.log(currentPlayer);
-    let ship = currentPlayer.gameBoard.getBoard()[xCor][yCor]
+    let ship = currentPlayer.gameBoard.getBoard()[xCor][yCor];
 
     currentPlayer.gameBoard.receiveAttack(xCor, yCor);
-    if(ship)console.log(`${ship.name}: ${ship.isSunk() ? 'sunk': 'Not Sunk'}`);
-    // console.log(currentPlayer.gameBoard.isAllShipSunk())
+    if (ship)
+        console.log(`${ship.name}: ${ship.isSunk() ? 'sunk' : 'Not Sunk'}`);
     game();
 }
 // turn logic
@@ -117,9 +124,26 @@ function gameTurn() {
     return;
 }
 
-function confirmShipsStatus(gameBoard){
-    if (gameBoard.isAllShipSunk()){
+function confirmShipsStatus(gameBoard) {
+    if (gameBoard.isAllShipSunk()) {
         // show who own and ask if user wants to play again
     }
 }
 
+
+function loadPrompt(){
+    // createForm()
+    component.form.addEventListener('submit', SetPlayerPref);
+}
+
+function SetPlayerPref(e){
+    e.preventDefault()
+    const formData = new FormData(component.form)
+    const data = Object.fromEntries(formData.entries())
+    const {playerChoice, playerOneName, playerTwoName} = data
+
+
+    console.log(playerChoice)
+    console.log(playerOneName)
+    console.log(playerTwoName)
+}

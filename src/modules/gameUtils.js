@@ -46,5 +46,5 @@ export function gameUtils() {
         return { xCor, yCor };
     }
 
-    return { computerPlay, generateShipCor };
+    return { computerPlay, generateShipCor, clearShipPos: () => shipPos.clear() };
 }
