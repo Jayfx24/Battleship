@@ -17,7 +17,7 @@ export function gameBoard() {
     }
     return {
         placeShip: (ship, xCor, yCor, isVertical) => {
-            const alignmentY = isVertical;
+            const alignmentX = isVertical;
             for (let i = 0; i < ship.length; i++) {
                 if (xCor < 0 || xCor > 9 || yCor < 0 || yCor > 9)
                     throw new Error('Out of bound');
@@ -27,7 +27,7 @@ export function gameBoard() {
                     );
                 }
                 board[xCor][yCor] = ship;
-                if (alignmentY) yCor++;
+                if (alignmentX) yCor++;
                 else xCor++;
             }
         },
