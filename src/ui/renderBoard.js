@@ -46,9 +46,9 @@ const playerOne = new Player('James', playerOneBoard);
 const playerTwoBoard = gameBoard();
 const playerTwo = new Player('Adams', playerTwoBoard);
 
-// domController.playerOneInfo.textContent = playerOne.playerName || 'Player-One';
-// domController.playerTwoInfo.textContent =
-//     playerTwo.type === 'real' ? playerTwo.playerName || 'Player Two' : 'AI';
+domController.playerOneInfo.textContent = playerOne.playerName || 'Player-One';
+domController.playerTwoInfo.textContent =
+    playerTwo.type === 'real' ? playerTwo.playerName || 'Player Two' : 'AI';
 
 function placeShip(player) {
     const ships = {

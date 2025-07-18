@@ -4,8 +4,8 @@ export const domController = {
     boardTwo: document.querySelector('.board-two'),
     boardOneWrapper: document.querySelector('.board__one__wrapper'),
     boardTwoWrapper: document.querySelector('.board__two__wrapper'),
-    playerOneInfo: document.querySelector('.player_one_info'),
-    playerTwoInfo: document.querySelector('.player_one_info'),
+    playerOneInfo: document.querySelector('.player__one__info'),
+    playerTwoInfo: document.querySelector('.player__two__info'),
     // cors : document.querySelectorAll('.cor')
 };
 export const component = {
