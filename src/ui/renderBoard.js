@@ -1,12 +1,8 @@
 import { Player } from '../modules/player.js';
 import { gameBoard } from '../modules/gameBoard.js';
 import { createShip } from '../modules/ship';
-import { domController,createForm,component } from './domController.js';
+import { domController, createForm, component } from './domController.js';
 import { gameUtils } from '../modules/gameUtils.js';
-
-
-
-
 
 export function createBoardUI(board, parent) {
     if (!Array.isArray(board)) return;
@@ -39,49 +35,57 @@ export function createBoardUI(board, parent) {
 }
 
 const utils = gameUtils();
-const players = {};
 const playerOneBoard = gameBoard();
-const playerOne = new Player('James', playerOneBoard);
+const playerOne = new Player('Player One', playerOneBoard);
 
 const playerTwoBoard = gameBoard();
 const playerTwo = new Player('Adams', playerTwoBoard);
+domController.playerOneInfo.textContent = playerOne.playerName;
 
-domController.playerOneInfo.textContent = playerOne.playerName || 'Player-One';
-domController.playerTwoInfo.textContent =
-    playerTwo.type === 'real' ? playerTwo.playerName || 'Player Two' : 'AI';
-
-function placeShip(player) {
+function placeShip(player, status = '') {
     const ships = {
+        Carrier: 5,
         Battleship: 4,
         Destroyer: 3,
         Submarine: 3,
-        Carrier: 5,
         'Patrol Boat': 3,
     };
 
-    Object.entries(ships).forEach(([key, value]) => {
-        const orientation = Math.random() < 0.5 ? 'horizontal' : 'vertical';
-        let ship = createShip(key, value);
-        let { xCor, yCor } = utils.generateShipCor(value, orientation);
-        const isVertical = orientation === 'vertical';
-        player.gameBoard.placeShip(ship, xCor, yCor, isVertical);
-    });
-    utils.clearShipPos();
+    const defaultShipsLoc = {
+        Carrier: { xCor: 1, yCor: 0 },
+        Battleship: { xCor: 3, yCor: 0 },
+        Destroyer: { xCor: 5, yCor: 0 },
+        Submarine: { xCor: 7, yCor: 0 },
+        'Patrol Boat': { xCor: 9, yCor: 0 },
+    };
+
+    if (status === 'random') {
+        Object.entries(ships).forEach(([key, value]) => {
+            const orientation = Math.random() < 0.5 ? 'horizontal' : 'vertical';
+            let ship = createShip(key, value);
+            let { xCor, yCor } = utils.generateShipCor(value, orientation);
+            const isHorizontal = orientation === 'vertical';
+            player.gameBoard.placeShip(ship, xCor, yCor, isHorizontal);
+        });
+        utils.clearShipPos();
+    } else if (status === 'drag') {
+        Object.entries(ships).forEach(([key, value]) => {
+
+            let ship = createShip(key, value);
+            if (!(key in defaultShipsLoc)) return
+            else if (defaultShipsLoc[key])
+                player.gameBoard.placeShip(
+                    ship,
+                    defaultShipsLoc[key].xCor,
+                    defaultShipsLoc[key].yCor,
+                    true,
+                );
+        });
+    }
 }
 
-placeShip(playerOne);
-placeShip(playerTwo);
-// let battleShip = createShip('Battleship', 4);
-// let carrier = createShip('Carrier', 5);
-// let Destroyer = createShip('Destroyer', 3);
-// let submarine = createShip('submarine', 3);
-// let patrolBoat = createShip('Patrol bOat', 2);
-
-// playerOne.gameBoard.placeShip(battleShip, 0, 0);
-// playerOne.gameBoard.placeShip(carrier, 0, 1);
-// playerOne.gameBoard.placeShip(Destroyer, 0, 2);
-// playerOne.gameBoard.placeShip(submarine, 0, 3);
-// playerOne.gameBoard.placeShip(patrolBoat, 0, 4);
+// placeShip(playerOne);
+placeShip((playerTwo.random = 'random'));
 
 let currentPlayer = playerOne;
 let activeBoard;
@@ -130,20 +134,38 @@ function confirmShipsStatus(gameBoard) {
     }
 }
 
-
-function loadPrompt(){
-    // createForm()
+function loadPrompt() {
+    createForm();
     component.form.addEventListener('submit', SetPlayerPref);
 }
 
-function SetPlayerPref(e){
-    e.preventDefault()
-    const formData = new FormData(component.form)
-    const data = Object.fromEntries(formData.entries())
-    const {playerChoice, playerOneName, playerTwoName} = data
+function SetPlayerPref(e) {
+    e.preventDefault();
+    const formData = new FormData(component.form);
+    const data = Object.fromEntries(formData.entries());
+    const { playerChoice, playerOneName, playerTwoName } = data;
+
+    if (playerOneName) {
+        domController.playerOneInfo.textContent = playerOneName;
+    }
+    // playerTwo.type === 'real' ? playerTwo.playerName || 'Player Two' : 'AI';
+
+    console.log(playerChoice);
+    console.log(playerOneName);
+    console.log(playerTwoName);
+    component.form.reset();
+    shipStorage();
+}
+
+function shipStorage() {
+    component.playerSetts.innerHTML = '';
+    component.placeHolder.classList.add('ship-holder');
+
+    const shipStor = new Player('ship location', gameBoard());
+    // const board = gameBoard();
+    placeShip(shipStor, 'drag');
+    createBoardUI(shipStor.gameBoard.getBoard(),component.placeHolder);
 
 
-    console.log(playerChoice)
-    console.log(playerOneName)
-    console.log(playerTwoName)
+    component.playerSetts.appendChild(component.placeHolder)
 }

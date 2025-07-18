@@ -38,14 +38,30 @@ main{
   /* margin-block: auto; */
   margin-inline: auto;
 }
-.board-one,.board-two,.player__settings{
+.board-one,.board-two,.ship-holder,.player__settings{
   display: flex;
   flex-wrap: wrap;
   width: calc(var(--size) * 10 + 2px) ;
   border: 1px solid black;
 }
 
-.board-one,.board-two{
+.player__settings{
+  width: calc(var(--size) * 10 + 4px) ;
+  /* border: none; */
+}
+.ship-holder .cor{
+  border: none;
+  border-bottom: 1px solid;
+  
+
+}
+.ship-holder{
+  margin-top: auto;
+}
+.ship-holder .cor:not(:has(.ship)){
+  background-color: lightblue;
+}
+.board-one,.board-two,.ship-holder{
   max-width: fit-content;
 
 }

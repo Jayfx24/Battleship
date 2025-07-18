@@ -10,13 +10,14 @@ export const domController = {
 };
 export const component = {
     form: document.createElement('form'),
+    playerSetts : document.createElement('div'),
+    placeHolder: document.createElement('div')
 };
 
 export function createForm() {
     domController.boardTwoWrapper.style.display = 'none';
 
-    const playerSetts = document.createElement('div');
-    playerSetts.className = 'player__settings';
+    component.playerSetts.className = 'player__settings';
 
     component.form.innerHTML = `<div class="">
                         <input
@@ -57,8 +58,8 @@ export function createForm() {
                     `;
 
     component.form.addEventListener('click', toggleInput);
-    playerSetts.appendChild(component.form);
-    domController.boardWrapper.appendChild(playerSetts);
+    component.playerSetts.appendChild(component.form);
+    domController.boardWrapper.appendChild(component.playerSetts);
 }
 
 function toggleInput(e) {
@@ -69,3 +70,6 @@ function toggleInput(e) {
     if (target.value === 'vsBot') input.classList.add('hide');
     else input.classList.remove('hide');
 }
+
+
+
