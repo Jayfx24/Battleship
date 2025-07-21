@@ -4,17 +4,17 @@ import { createShip } from '../modules/ship';
 import { domController, createForm, component } from './domController.js';
 import { gameUtils } from '../modules/gameUtils.js';
 
-export function createBoardUI(board, parent) {
+export function createBoardUI(board, parent, toDrag = false) {
     if (!Array.isArray(board)) return;
 
     for (let i = 0; i < board.length; i++) {
         let x = i;
         let y = 0;
 
-        board[i].forEach((element) => {
+        board[i].forEach((element, index) => {
             const box = document.createElement('div');
             box.classList.add('cor');
-            // box.textContent = element;
+
             if (element || element === 0) {
                 let ship = document.createElement('div');
                 if (element === 'X') ship.classList.add('ship-hit');
@@ -22,11 +22,17 @@ export function createBoardUI(board, parent) {
                 else {
                     ship.classList.add('ship');
                 }
+                ship.draggable = true;
+                ship.dataset.xCor = x;
+                ship.dataset.yCor = y;
+
+                ship.dataset.index = index;
+                // chap ship missed to box
+                ship.dataset.type = element.name;
                 box.appendChild(ship);
             }
             box.dataset.xCor = x;
             box.dataset.yCor = y;
-            box.dataset.type = element.name;
             y++;
 
             parent.appendChild(box);
@@ -48,7 +54,7 @@ function placeShip(player, status = '') {
         Battleship: 4,
         Destroyer: 3,
         Submarine: 3,
-        'Patrol Boat': 3,
+        PatrolBoat: 3,
     };
 
     const defaultShipsLoc = {
@@ -56,7 +62,7 @@ function placeShip(player, status = '') {
         Battleship: { xCor: 3, yCor: 0 },
         Destroyer: { xCor: 5, yCor: 0 },
         Submarine: { xCor: 7, yCor: 0 },
-        'Patrol Boat': { xCor: 9, yCor: 0 },
+        PatrolBoat: { xCor: 9, yCor: 0 },
     };
 
     if (status === 'random') {
@@ -70,9 +76,8 @@ function placeShip(player, status = '') {
         utils.clearShipPos();
     } else if (status === 'drag') {
         Object.entries(ships).forEach(([key, value]) => {
-
             let ship = createShip(key, value);
-            if (!(key in defaultShipsLoc)) return
+            if (!(key in defaultShipsLoc)) return;
             else if (defaultShipsLoc[key])
                 player.gameBoard.placeShip(
                     ship,
@@ -91,10 +96,7 @@ let currentPlayer = playerOne;
 let activeBoard;
 
 export function game() {
-    domController.boardOne.innerHTML = '';
-    domController.boardTwo.innerHTML = '';
-    createBoardUI(playerOne.gameBoard.getBoard(), domController.boardOne);
-    createBoardUI(playerTwo.gameBoard.getBoard(), domController.boardTwo);
+    resetBoardUI()
     loadPrompt(); // temp location
     gameTurn();
     domController.boardWrapper.addEventListener('click', handleBoxClick);
@@ -161,11 +163,70 @@ function shipStorage() {
     component.playerSetts.innerHTML = '';
     component.placeHolder.classList.add('ship-holder');
 
+    const ships = {
+        Carrier: 5,
+        Battleship: 4,
+        Destroyer: 3,
+        Submarine: 3,
+        PatrolBoat: 3,
+    };
+
     const shipStor = new Player('ship location', gameBoard());
     // const board = gameBoard();
     placeShip(shipStor, 'drag');
-    createBoardUI(shipStor.gameBoard.getBoard(),component.placeHolder);
+    createBoardUI(shipStor.gameBoard.getBoard(), component.placeHolder);
 
+    component.playerSetts.appendChild(component.placeHolder);
 
-    component.playerSetts.appendChild(component.placeHolder)
+    component.placeHolder.querySelectorAll('.ship').forEach((el) => {
+        el.addEventListener('dragstart', (ev) => {
+            el.classList.add('beingDragged');
+            const data = ev.target.dataset.type;
+            // const dataType = ev.target.dataset.type;
+            console.log(ev);
+            let ship = document.querySelectorAll(`[data-type = "${data}"]`)
+            data.dataTransfer.setData('text/html', ship);
+            ev.dataTransfer.dropEffect = 'move';
+        });
+
+        el.addEventListener('dragend', () => {
+            el.classList.remove('beingDragged');
+            el.classList.remove('ship');
+        });
+    });
+    document.querySelectorAll('.board-one .cor').forEach((el) => {
+        el.classList.add('dropZone');
+        el.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            el.classList.add('active');
+            e.dataTransfer.dropEffect = 'move';
+        });
+
+        el.addEventListener('drop', (e) => {
+            e.preventDefault();
+
+            const data = e.dataTransfer.getData('text/html');
+            if (data) {
+                let ship = createShip(data, ships[data]);
+                console.log(el);
+                playerOne.gameBoard.placeShip(
+                    ship,
+                    el.dataset.xCor,
+                    el.dataset.yCor,
+                );
+            }
+            console.log(shipStor.gameBoard.getBoard());
+            resetBoardUI()
+           
+        });
+    });
 }
+
+function resetBoardUI() {
+    domController.boardOne.innerHTML = '';
+    domController.boardTwo.innerHTML = '';
+
+    createBoardUI(playerOne.gameBoard.getBoard(), domController.boardOne);
+    createBoardUI(playerTwo.gameBoard.getBoard(), domController.boardTwo);
+}
+// still ion drag, trying to use the index and type to locate movable ship

@@ -4,7 +4,6 @@
 
 
 * {
-  /* background-color: black; */
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -52,6 +51,8 @@ main{
 .ship-holder .cor{
   border: none;
   border-bottom: 1px solid;
+  position: relative;
+
   
 
 }
@@ -71,6 +72,11 @@ main{
   position: relative;
   z-index: -1;
 }
+
+.ship-holder .cor .ship{
+  position: relative;
+  z-index: 100;
+}
 .ship{
   background-color: green;
 }
@@ -85,3 +91,4 @@ main{
 .hide{
   display: none;
 }
+
