@@ -6,12 +6,14 @@ export const domController = {
     boardTwoWrapper: document.querySelector('.board__two__wrapper'),
     playerOneInfo: document.querySelector('.player__one__info'),
     playerTwoInfo: document.querySelector('.player__two__info'),
+    
     // cors : document.querySelectorAll('.cor')
 };
 export const component = {
     form: document.createElement('form'),
     playerSetts : document.createElement('div'),
-    placeHolder: document.createElement('div')
+    placeHolder: document.createElement('div'),
+    dragBoard : document.createElement('div')
 };
 
 export function createForm() {
@@ -71,5 +73,8 @@ function toggleInput(e) {
     else input.classList.remove('hide');
 }
 
+function shipBoard(){
+    const board = 
+}
 
 

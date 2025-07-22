@@ -1,5 +1,6 @@
-export function gameBoard() {
-    let [row, col] = [10, 10];
+export function gameBoard(row=10,col=10) {
+
+    if (!Number(row) || !Number(col)) throw new Error('input numbers ')
     
     let board = Array.from({ length: row }, () => Array(col).fill(''));
 

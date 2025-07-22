@@ -25,7 +25,10 @@ export class createGame {
 
     loadPrompt() {
         createForm();
-        component.form.addEventListener('submit',  this.setPlayerPref.bind(this));
+        component.form.addEventListener(
+            'submit',
+            this.setPlayerPref.bind(this),
+        );
     }
 
     createPlayers() {
@@ -124,7 +127,7 @@ export class createGame {
         if (!cor) return;
         if (cor.querySelector('.missed') || cor.querySelector('.ship-hit'))
             return;
-        if (!cor.closest(`.${activeBoard.className}`)) return;
+        if (!cor.closest(`.${this.activeBoard.className}`)) return;
         // send Cor
         const xCor = target.dataset.xCor;
         const yCor = target.dataset.yCor;
@@ -183,47 +186,56 @@ export class createGame {
 
         component.playerSetts.appendChild(component.placeHolder);
 
-        // component.placeHolder.querySelectorAll('.ship').forEach((el) => {
-        //     // el.addEventListener('dragstart', (ev) => {
-        //     //     el.classList.add('beingDragged');
-        //     //     const data = ev.target.dataset.type;
-        //     //     // const dataType = ev.target.dataset.type;
-        //     //     console.log(ev);
-        //     //     let ship = document.querySelectorAll(`[data-type = "${data}"]`);
-        //     //     ship.forEach((el) => {
-        //     //         if (el.dataset.index !== ev.target.dataset.index)
-        //     //             el.classList.add('hide');
-        //     //     });
+        component.placeHolder.querySelectorAll('.ship').forEach((el) => {
+            // el.addEventListener('dragstart', (ev) => {
+            //     el.classList.add('beingDragged');
+            //     const data = ev.target.dataset.type;
+            //     // const dataType = ev.target.dataset.type;
+            //     console.log(ev);
+            //     let ship = document.querySelectorAll(`[data-type = "${data}"]`);
+            //     ship.forEach((el) => {
+            //         if (el.dataset.index !== ev.target.dataset.index)
+            //             el.classList.add('hide');
+            //     });
 
-        //     //     ev.dataTransfer.setData('text/html', ship);
+            //     ev.dataTransfer.setData('text/html', ship);
 
-        //     //     ev.dataTransfer.dropEffect = 'move';
-        //     // });
+            //     ev.dataTransfer.dropEffect = 'move';
+            // });
 
-        //     // el.addEventListener('dragend', () => {
-        //     //     el.classList.remove('beingDragged');
-        //     //     el.classList.remove('ship');
-        //     // });
-        //     let isMoving = false;
-        //     el.style.position = 'absolute';
-        //     el.style.zIndex = 1000;
+            // el.addEventListener('dragend', () => {
+            //     el.classList.remove('beingDragged');
+            //     el.classList.remove('ship');
+            // });
 
-        //     el.addEventListener('mousedown', (e) => {
-        //         let shiftX = e.clientX - el.getBoundingClientRect().left;
-        //         let shiftY = e.clientY - el.getBoundingClientRect().top;
+            let newX,
+                newY,
+                shiftX,
+                shiftY = 0;
+            function mousedown(e) {
+                shiftX = e.clientX - el.getBoundingClientRect().left;
+                shiftY = e.clientY - el.getBoundingClientRect().top;
+                document.addEventListener('mousemove', mousemove);
+            }
 
-        //         el.style.left = e.clientX - shiftX + 'px';
-        //         el.style.top = e.clientY - shiftY + 'px';
-        //         isMoving = true;
+            function mousemove(e) {
+                newX = shiftX - e.clientX;
+                newY = shiftY - e.clientY;
+                shiftX = e.clientX - el.getBoundingClientRect().left;
+                shiftY = e.clientY - el.getBoundingClientRect().top;
 
-        //         domController.boardWrapper.addEventListener('mousemove', (e) => {
-        //             if (isMoving) {
-        //                 el.style.left = e.clientX - shiftX + 'px';
-        //                 el.style.top = e.clientY - shiftY + 'px';
-        //             }
-        //         });
-        //     });
-        // });
+                el.style.top = shiftY + 'px';
+                el.style.left = shiftX + 'px';
+
+                console.log(newX, newY);
+                console.log(shiftX, shiftY);
+            }
+            let isMoving = false;
+            el.style.position = 'absolute';
+            el.style.zIndex = 1000;
+
+            el.addEventListener('mousedown', mousedown);
+        });
     }
     setPlayerPref(e) {
         e.preventDefault();
