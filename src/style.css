@@ -36,6 +36,7 @@ main{
   justify-content: center;
   /* margin-block: auto; */
   margin-inline: auto;
+  position: relative;
 }
 .board-one,.board-two,.ship-holder,.player__settings{
   display: flex;
@@ -79,6 +80,7 @@ main{
 }
 .ship{
   background-color: green;
+  position: absolute;
 }
 .ship-hit{
   background-color: red;

@@ -96,7 +96,7 @@ let currentPlayer = playerOne;
 let activeBoard;
 
 export function game() {
-    resetBoardUI()
+    resetBoardUI();
     loadPrompt(); // temp location
     gameTurn();
     domController.boardWrapper.addEventListener('click', handleBoxClick);
@@ -179,47 +179,72 @@ function shipStorage() {
     component.playerSetts.appendChild(component.placeHolder);
 
     component.placeHolder.querySelectorAll('.ship').forEach((el) => {
-        el.addEventListener('dragstart', (ev) => {
-            el.classList.add('beingDragged');
-            const data = ev.target.dataset.type;
-            // const dataType = ev.target.dataset.type;
-            console.log(ev);
-            let ship = document.querySelectorAll(`[data-type = "${data}"]`)
-            data.dataTransfer.setData('text/html', ship);
-            ev.dataTransfer.dropEffect = 'move';
-        });
+        // el.addEventListener('dragstart', (ev) => {
+        //     el.classList.add('beingDragged');
+        //     const data = ev.target.dataset.type;
+        //     // const dataType = ev.target.dataset.type;
+        //     console.log(ev);
+        //     let ship = document.querySelectorAll(`[data-type = "${data}"]`);
+        //     ship.forEach((el) => {
+        //         if (el.dataset.index !== ev.target.dataset.index)
+        //             el.classList.add('hide');
+        //     });
 
-        el.addEventListener('dragend', () => {
-            el.classList.remove('beingDragged');
-            el.classList.remove('ship');
+        //     ev.dataTransfer.setData('text/html', ship);
+
+        //     ev.dataTransfer.dropEffect = 'move';
+        // });
+
+        // el.addEventListener('dragend', () => {
+        //     el.classList.remove('beingDragged');
+        //     el.classList.remove('ship');
+        // });
+        let isMoving = false;
+        el.style.position = 'absolute'
+        el.style.zIndex =  1000
+
+        el.addEventListener('mousedown', (e) => {
+            let shiftX = e.clientX - el.getBoundingClientRect().left;
+            let shiftY = e.clientY - el.getBoundingClientRect().top;
+
+            
+            el.style.left = e.clientX - shiftX + 'px';
+            el.style.top = e.clientY - shiftY + 'px';
+            isMoving = true;
+
+            domController.boardWrapper.addEventListener('mousemove', (e) => {
+                if (isMoving) {
+                    el.style.left = e.clientX - shiftX + 'px';
+                    el.style.top = e.clientY - shiftY + 'px';
+                }
+            });
         });
     });
-    document.querySelectorAll('.board-one .cor').forEach((el) => {
-        el.classList.add('dropZone');
-        el.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            el.classList.add('active');
-            e.dataTransfer.dropEffect = 'move';
-        });
+    // document.querySelectorAll('.board-one .cor').forEach((el) => {
+    //     el.classList.add('dropZone');
+    //     el.addEventListener('dragover', (e) => {
+    //         e.preventDefault();
+    //         el.classList.add('active');
+    //         e.dataTransfer.dropEffect = 'move';
+    //     });
 
-        el.addEventListener('drop', (e) => {
-            e.preventDefault();
+    //     el.addEventListener('drop', (e) => {
+    //         e.preventDefault();
 
-            const data = e.dataTransfer.getData('text/html');
-            if (data) {
-                let ship = createShip(data, ships[data]);
-                console.log(el);
-                playerOne.gameBoard.placeShip(
-                    ship,
-                    el.dataset.xCor,
-                    el.dataset.yCor,
-                );
-            }
-            console.log(shipStor.gameBoard.getBoard());
-            resetBoardUI()
-           
-        });
-    });
+    //         const data = e.dataTransfer.getData('text/html');
+    //         if (data) {
+    //             let ship = createShip(data, ships[data]);
+    //             console.log(el);
+    //             playerOne.gameBoard.placeShip(
+    //                 ship,
+    //                 el.dataset.xCor,
+    //                 el.dataset.yCor,
+    //             );
+    //         }
+    //         console.log(shipStor.gameBoard.getBoard());
+    //         resetBoardUI();
+    //     });
+    // });
 }
 
 function resetBoardUI() {
@@ -230,3 +255,7 @@ function resetBoardUI() {
     createBoardUI(playerTwo.gameBoard.getBoard(), domController.boardTwo);
 }
 // still ion drag, trying to use the index and type to locate movable ship
+function moveAt(event, pageX, pageY) {
+    event.style.left = pageX - event.offsetWidth / 2 + 'px';
+    event.style.top = pageY - event.offsetHeight / 2 + 'px';
+}
