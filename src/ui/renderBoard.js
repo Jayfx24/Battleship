@@ -11,6 +11,11 @@ export class createGame {
         this.playerTwo = new Player('Adams', gameBoard());
         this.currentPlayer = this.playerOne;
         this.activeBoard = null;
+        this.newX = this.newY = this.startX = this.startY = 0;
+        this.offsetX = this.offsetY = this.isDragging = false;
+        this.currentDraggable = null;
+        this.bondMouseMove = this.mouseMove.bind(this);
+        this.bondMouseUp = this.mouseUp.bind(this);
     }
 
     game() {
@@ -82,15 +87,15 @@ export class createGame {
             PatrolBoat: 3,
         };
     }
-    placeShip(player, status = '') {
+    placeShip(player, status = 'random') {
         // needs refactoring
         const ships = this.#shipsInfo();
         const defaultShipsLoc = {
-            Carrier: { xCor: 1, yCor: 0 },
-            Battleship: { xCor: 3, yCor: 0 },
-            Destroyer: { xCor: 5, yCor: 0 },
-            Submarine: { xCor: 7, yCor: 0 },
-            PatrolBoat: { xCor: 9, yCor: 0 },
+            Carrier: { xCor: 0, yCor: 0 },
+            Battleship: { xCor: 1, yCor: 0 },
+            Destroyer: { xCor: 2, yCor: 0 },
+            Submarine: { xCor: 3, yCor: 0 },
+            PatrolBoat: { xCor: 4, yCor: 0 },
         };
 
         if (status === 'random') {
@@ -169,6 +174,8 @@ export class createGame {
             this.playerTwo.gameBoard.getBoard(),
             domController.boardTwo,
         );
+
+        // this.dragEnd()
     }
 
     shipStorage() {
@@ -176,66 +183,125 @@ export class createGame {
         component.placeHolder.classList.add('ship-holder');
 
         const ships = this.#shipsInfo();
-        const shipStor = new Player('ship location', gameBoard());
-        // const board = gameBoard();
-        this.placeShip(shipStor, 'drag');
-        this.createBoardUI(
-            shipStor.gameBoard.getBoard(),
-            component.placeHolder,
-        );
+        const board = gameBoard(6, 6);
+        const defaultShipsLoc = {
+            Carrier: { xCor: 0, yCor: 0 },
+            Battleship: { xCor: 1, yCor: 0 },
+            Destroyer: { xCor: 2, yCor: 0 },
+            Submarine: { xCor: 3, yCor: 0 },
+            PatrolBoat: { xCor: 4, yCor: 0 },
+        };
+        let count = 0;
+        Object.entries(ships).forEach(([key, value]) => {
+            count++;
+            console.log(count);
+
+            if (!(key in defaultShipsLoc)) return;
+            else if (defaultShipsLoc[key]) {
+                let shipLayer = document.createElement('div');
+                shipLayer.classList.add('ship-layer');
+                shipLayer.classList.add(`${key}`);
+                shipLayer.dataset.type = key;
+                shipLayer.draggable = true;
+                for (let i = 0; i < value; i++) {
+                    let box = document.createElement('div');
+                    box.classList.add('dock-ship');
+
+                    shipLayer.appendChild(box);
+                }
+
+                component.placeHolder.appendChild(shipLayer);
+            }
+        });
+        // this.placeShip(shipStor, 'drag',false);
 
         component.playerSetts.appendChild(component.placeHolder);
 
-        component.placeHolder.querySelectorAll('.ship').forEach((el) => {
-            // el.addEventListener('dragstart', (ev) => {
-            //     el.classList.add('beingDragged');
-            //     const data = ev.target.dataset.type;
-            //     // const dataType = ev.target.dataset.type;
-            //     console.log(ev);
-            //     let ship = document.querySelectorAll(`[data-type = "${data}"]`);
-            //     ship.forEach((el) => {
-            //         if (el.dataset.index !== ev.target.dataset.index)
-            //             el.classList.add('hide');
-            //     });
+        console.log(component.placeHolder.querySelector('.ship-layer'));
 
-            //     ev.dataTransfer.setData('text/html', ship);
+        this.dragStart();
+    }
 
-            //     ev.dataTransfer.dropEffect = 'move';
-            // });
-
-            // el.addEventListener('dragend', () => {
-            //     el.classList.remove('beingDragged');
-            //     el.classList.remove('ship');
-            // });
-
-            let newX,
-                newY,
-                shiftX,
-                shiftY = 0;
-            function mousedown(e) {
-                shiftX = e.clientX - el.getBoundingClientRect().left;
-                shiftY = e.clientY - el.getBoundingClientRect().top;
-                document.addEventListener('mousemove', mousemove);
-            }
-
-            function mousemove(e) {
-                newX = shiftX - e.clientX;
-                newY = shiftY - e.clientY;
-                shiftX = e.clientX - el.getBoundingClientRect().left;
-                shiftY = e.clientY - el.getBoundingClientRect().top;
-
-                el.style.top = shiftY + 'px';
-                el.style.left = shiftX + 'px';
-
-                console.log(newX, newY);
-                console.log(shiftX, shiftY);
-            }
-            let isMoving = false;
-            el.style.position = 'absolute';
-            el.style.zIndex = 1000;
-
-            el.addEventListener('mousedown', mousedown);
+    dragStart() {
+        component.placeHolder.addEventListener('mousedown', (e) => {
+            let shipLayer = e.target.closest('.ship-layer');
+            if (!shipLayer) return;
+            this.currentDraggable = shipLayer;
+            this.mouseDown(e);
         });
+    }
+
+    mouseDown(e) {
+        e.preventDefault()
+        // const draggable = e.target
+        this.currentDraggable.style.position = 'absolute';
+        this.currentDraggable.style.zIndex = 100;
+        this.offsetX = e.clientX - this.currentDraggable.offsetLeft;
+        this.offsetY = e.clientY - this.currentDraggable.offsetTop;
+        this.isDragging = true;
+
+
+        this.currentDraggable.style.cursor = 'grabbing';
+        domController.boardWrapper.addEventListener(
+            'mousemove',
+            this.bondMouseMove,
+        );
+
+        domController.boardWrapper.addEventListener(
+            'mouseup',
+            this.bondMouseUp,
+        );
+    }
+
+    mouseMove(e) {
+        e.preventDefault()
+
+        if (this.isDragging) {
+            console.log('here');
+            this.currentDraggable.style.left = e.clientX - this.offsetX + 'px';
+            this.currentDraggable.style.top = e.clientY - this.offsetY + 'px';
+        }
+    }
+
+    mouseUp(e) {
+        e.preventDefault()
+    
+        
+        // this.currentDraggable.style.cursor = 'move'
+       console.log(e.target)
+        this.dragTarget(e),
+       
+        
+         this.isDragging = false;
+
+        domController.boardWrapper.removeEventListener(
+            'mousemove',
+            this.bondMouseMove,
+        );
+        domController.boardWrapper.removeEventListener(
+            'mouseup',
+            this.bondMouseUp,
+        );
+       
+        this.currentDraggable = null;
+        // this.dragStart()
+    }
+    dragTarget(e) {
+        e.preventDefault()
+        this.currentDraggable.style.display = 'none';
+
+        const below = document.elementFromPoint(e.clientX,e.clientY)
+        const shipLayer = e.target.closest('.ship-layer');
+        
+        const ships = this.#shipsInfo();
+        const target = below.closest('.cor');
+        
+        console.log(shipLayer) ;
+        if (!target) return;
+        console.log(ships[shipLayer.dataset.type])
+        const ship = createShip(shipLayer.dataset.type,ships[shipLayer.dataset.type])
+        this.playerOne.gameBoard.placeShip(ship,target.dataset.xCor,target.dataset.yCor,true)
+       this.resetBoardUI()
     }
     setPlayerPref(e) {
         e.preventDefault();
@@ -256,11 +322,3 @@ export class createGame {
         component.form.reset();
     }
 }
-
-// placeShip(playerOne);
-// placeShip((playerTwo.random = 'random'));
-
-// turn logic
-// and know if a ship is sunk
-
-// still ion drag, trying to use the index and type to locate movable ship

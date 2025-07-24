@@ -38,7 +38,7 @@ main{
   margin-inline: auto;
   position: relative;
 }
-.board-one,.board-two,.ship-holder,.player__settings{
+.board-one,.board-two,.player__settings{
   display: flex;
   flex-wrap: wrap;
   width: calc(var(--size) * 10 + 2px) ;
@@ -47,6 +47,7 @@ main{
 
 .player__settings{
   width: calc(var(--size) * 10 + 4px) ;
+  
   /* border: none; */
 }
 .ship-holder .cor{
@@ -57,13 +58,15 @@ main{
   
 
 }
-.ship-holder{
-  margin-top: auto;
+.ship-layer{
+  width: calc(var(--size) * 6 + 4px) ;
+
+  /* margin-top: auto; */
 }
 .ship-holder .cor:not(:has(.ship)){
   background-color: lightblue;
 }
-.board-one,.board-two,.ship-holder{
+.board-one,.board-two{
   max-width: fit-content;
 
 }
@@ -94,3 +97,41 @@ main{
   display: none;
 }
 
+.ship-holder{
+  /* margin-block: auto; */
+  width: 100%;
+  height: 80%;
+  padding: 1rem ;
+  /* display: grid; */
+  /* grid-template-rows: repeat(5,50px); */
+  gap: .25rem;
+  /* display: flex; */
+  position: relative;
+  border: 1px solid;
+  
+}
+.ship-layer{
+  display: flex;
+  gap: .1rem;
+  position: relative;
+  z-index: 10;
+  margin-bottom: 1rem;
+ 
+
+}
+.dock-ship{
+ 
+ width: var(--size);
+ height: var(--size);
+ background-color: green;
+ position: relative;
+ z-index: -1;
+}
+
+.beingDragged{
+  /* opacity: 0; */
+}
+
+.over{
+  border: 2px solid blue;
+}

@@ -73,8 +73,3 @@ function toggleInput(e) {
     else input.classList.remove('hide');
 }
 
-function shipBoard(){
-    const board = 
-}
-
-
