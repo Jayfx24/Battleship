@@ -1,4 +1,3 @@
-
 // generate random coordinates
 
 export function gameUtils() {
@@ -25,26 +24,46 @@ export function gameUtils() {
 
         const xCor = generateRandInt();
         const yCor = generateRandInt();
-        const mainAxis = position === 'vertical' ? yCor : xCor;
+        const mainAxis = position ? yCor : xCor;
 
-        if (mainAxis + length -1 >= max )
+        if (mainAxis + length - 1 >= max)
             return generateShipCor(length, position);
 
         // add ship occupied spots to shipPos
-        for (let i = 0; i < length; i++) {
-            const x = position === 'vertical' ? xCor : xCor + i;
-            const y = position === 'vertical' ? yCor + i : yCor;
-            let OccupiedSpot = `${x},${y}`;
-            if (shipPos.has(OccupiedSpot)) {
-                return generateShipCor(length, position);
-            }
-            shipPos.add(OccupiedSpot);
-        }
-        
+        if (!isEmpty(shipPos,xCor, yCor, length,position)) generateShipCor(length,position)
+        // for (let i = 0; i < length; i++) {
+        //     const x = position === 'vertical' ? xCor : xCor + i;
+        //     const y = position === 'vertical' ? yCor + i : yCor;
+        //     let OccupiedSpot = `${x},${y}`;
+        //     if (shipPos.has(OccupiedSpot)) {
+        //         return generateShipCor(length, position);
+        //     }
+        //     shipPos.add(OccupiedSpot);
+        // }
 
         console.log(shipPos);
         return { xCor, yCor };
     }
 
-    return { computerPlay, generateShipCor, clearShipPos: () => shipPos.clear() };
+    function isEmpty(set,xCor, yCor, length, position) {
+        console.log("isE")
+
+        for (let i = 0; i < length; i++) {
+            const x = position ? xCor : xCor + i;
+            const y = position ? yCor + i : yCor;
+            let OccupiedSpot = `${x},${y}`;
+            console.log(set)
+            if (set.has(OccupiedSpot)) {
+                return false
+            }
+            set.add(OccupiedSpot);
+        }
+        return true
+    }
+    return {
+        computerPlay,
+        generateShipCor,
+        clearShipPos: () => shipPos.clear(),
+        isEmpty,
+    };
 }
