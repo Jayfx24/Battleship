@@ -46,16 +46,16 @@ export function gameUtils() {
     }
 
     function isEmpty(set,xCor, yCor, length, position) {
-        console.log("isE")
+        // console.log("isE")
 
         for (let i = 0; i < length; i++) {
             const x = position ? xCor : xCor + i;
             const y = position ? yCor + i : yCor;
             let OccupiedSpot = `${x},${y}`;
-            console.log(set)
             if (set.has(OccupiedSpot)) {
                 return false
             }
+            
             set.add(OccupiedSpot);
         }
         return true

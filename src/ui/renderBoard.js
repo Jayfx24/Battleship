@@ -11,12 +11,15 @@ export class createGame {
         this.playerTwo = new Player('Adams', gameBoard());
         this.currentPlayer = this.playerOne;
         this.activeBoard = null;
-        this.newX = this.newY = this.startX = this.startY = 0;
         this.offsetX = this.offsetY = this.isDragging = false;
         this.currentDraggable = null;
         this.bondMouseMove = this.mouseMove.bind(this);
         this.bondMouseUp = this.mouseUp.bind(this);
         this.dragStartLoc = null;
+        this.orientation = true;
+        this.isDragging = false;
+        this.rect = null
+        this.parentRect = null
     }
 
     game() {
@@ -61,10 +64,10 @@ export class createGame {
                     else {
                         ship.classList.add('ship');
                     }
-                    ship.draggable = true;
+                    // ship.draggable = true;
                     ship.dataset.xCor = x;
                     ship.dataset.yCor = y;
-
+                    ship.dataset.positioning = element.orientation;
                     ship.dataset.index = index;
                     // chap ship missed to box
                     ship.dataset.type = element.name;
@@ -194,7 +197,6 @@ export class createGame {
         let count = 0;
         Object.entries(ships).forEach(([key, value]) => {
             count++;
-            console.log(count);
 
             if (!(key in defaultShipsLoc)) return;
             else if (defaultShipsLoc[key]) {
@@ -202,7 +204,7 @@ export class createGame {
                 shipLayer.classList.add('ship-layer');
                 shipLayer.classList.add(`${key}`);
                 shipLayer.dataset.type = key;
-                shipLayer.draggable = true;
+                // shipLayer.draggable = true;
                 for (let i = 0; i < value; i++) {
                     let box = document.createElement('div');
                     box.classList.add('dock-ship');
@@ -217,31 +219,31 @@ export class createGame {
 
         component.playerSetts.appendChild(component.placeHolder);
 
-        console.log(component.placeHolder.querySelector('.ship-layer'));
-
         this.dragStart();
     }
 
     dragStart() {
-        component.placeHolder.addEventListener('mousedown', (e) => {
-            let shipLayer = e.target.closest('.ship-layer');
-            if (!shipLayer) return;
-            this.currentDraggable = shipLayer;
-            this.mouseDown(e);
+        document.querySelectorAll('.ship-layer').forEach((el) => {
+            el.addEventListener('mousedown', (e) => {
+                this.currentDraggable = el;
+
+                this.mouseDown(e);
+            });
         });
+        this.rotateShip();
     }
 
     mouseDown(e) {
         e.preventDefault();
         // const draggable = e.target
-        const rect = this.currentDraggable.getBoundingClientRect();
-        const parentRect = component.placeHolder.getBoundingClientRect();
+        this.rect = this.currentDraggable.getBoundingClientRect();
+        this.parentRect = component.placeHolder.getBoundingClientRect();
         this.dragStartLoc = [
-            rect.left - parentRect.left,
-            rect.top - parentRect.top,
+            this.rect.left - this.parentRect.left,
+            this.rect.top - this.parentRect.top,
         ];
         this.currentDraggable.style.position = 'absolute';
-        this.currentDraggable.style.zIndex = 100;
+        this.currentDraggable.style.zIndex = 1000;
         this.offsetX = e.clientX - this.currentDraggable.offsetLeft;
         this.offsetY = e.clientY - this.currentDraggable.offsetTop;
         this.isDragging = true;
@@ -262,7 +264,6 @@ export class createGame {
         e.preventDefault();
 
         if (this.isDragging) {
-            console.log('here');
             this.currentDraggable.style.left = e.clientX - this.offsetX + 'px';
             this.currentDraggable.style.top = e.clientY - this.offsetY + 'px';
         }
@@ -272,7 +273,7 @@ export class createGame {
         e.preventDefault();
 
         // this.currentDraggable.style.cursor = 'move'
-        console.log(e.target);
+
         this.dragTarget(e), (this.isDragging = false);
 
         domController.boardWrapper.removeEventListener(
@@ -289,34 +290,39 @@ export class createGame {
     }
     dragTarget(e) {
         e.preventDefault();
-        const shipEleRect =  this.currentDraggable.firstElementChild.getBoundingClientRect();
+        const shipEleRect =
+            this.currentDraggable.firstElementChild.getBoundingClientRect();
 
-        this.currentDraggable.style.display = 'none';
+        // if(this.currentDraggable.left <= )
+        this.currentDraggable.style.visibility = 'hidden';
         const centerX = shipEleRect.left + shipEleRect.width / 2;
         const centerY = shipEleRect.top + shipEleRect.height / 2;
         const below = document.elementFromPoint(e.clientX, e.clientY);
         const firstBelow = document.elementFromPoint(centerX, centerY);
 
-        console.log(below, firstBelow);
+        // console.log(below, firstBelow);
         const ships = this.#shipsInfo();
 
         // use first ele of ship to find loc or curs
         const target = firstBelow?.closest('.cor') || below.closest('.cor');
-       
+
         if (target) {
             const type = this.currentDraggable.dataset.type;
             const xCor = parseInt(target.dataset.xCor);
             const yCor = parseInt(target.dataset.yCor);
-            console.log(xCor, yCor);
+
             const ship = createShip(type, ships[type]);
 
-            if (this.checkIfValidDrop(ship, xCor, yCor, false)) {
-                this.playerOne.gameBoard.placeShip(ship, xCor, yCor, false);
+            if (this.checkIfValidDrop(ship, xCor, yCor, this.orientation)) {
+                this.playerOne.gameBoard.placeShip(ship, xCor, yCor, this.orientation);
 
                 this.resetBoardUI();
+                // this.currentDraggable.style.visibility = 'visible';
+                // this.dragOnBoard()
+
                 return;
             } else {
-                this.currentDraggable.style.display = '';
+                this.currentDraggable.style.visibility = 'visible';
                 this.currentDraggable.style.left = this.dragStartLoc[0] + 'px';
                 this.currentDraggable.style.top = this.dragStartLoc[1] + 'px';
                 return;
@@ -334,29 +340,87 @@ export class createGame {
         }
         // playerTwo.type === 'real' ? playerTwo.playerName || 'Player Two' : 'AI';
 
-        console.log(playerChoice);
-        console.log(playerOneName);
-        console.log(playerTwoName);
+        // console.log(playerChoice);
+        // console.log(playerOneName);
+        // console.log(playerTwoName);
         this.shipStorage();
 
         component.form.reset();
     }
 
     checkIfValidDrop(ship, xCor, yCor, isHorizontal) {
-        // console.log(1.10);
+       
 
-        console.log(yCor + ship.length);
         if (!ship) return false;
         if (isHorizontal && yCor + ship.length > 10) return false;
         if (!isHorizontal && xCor + ship.length > 10) return false;
 
         const filled = this.playerOne.gameBoard.occupiedLocs();
-        if (
-            !this.utils.isEmpty(filled, xCor, yCor, ship.length, isHorizontal)
-        ) {
+        if(filled.has(`${xCor},${yCor}`)) filled.delete(`${xCor},${yCor}`)
+        if (!this.utils.isEmpty(filled, xCor, yCor, ship.length, isHorizontal)) {
+            console.log('workinh');
             return false;
         }
 
         return true;
     }
+
+    dragOnBoard() {
+        domController.boardOne.addEventListener('mousedown', (e) => {
+            const target = e.target.closest('.cor');
+
+            if (!target) return;
+            const child = target.querySelector('.ship');
+            if (!child) return;
+            const ship = document.querySelector(
+                `.ship-layer[data-type="${child.dataset.type}"]`,
+            );
+            // console.log(target.closest('.ship-layer'));
+            ship.style.visibility = 'visible';
+
+            ship.style.left = ship.style.left - e.clientX + 'px';
+            ship.style.top = ship.style.top - e.clientY + 'px';
+
+            this.playerOne.gameBoard.removeShip(child.dataset.type);
+            this.resetBoardUI();
+        });
+    }
+
+    rotateShip() {
+        const ships = this.#shipsInfo();
+        domController.boardOne.addEventListener('click', (e) => {
+            const target = e.target.closest('.cor');
+
+            if (!target) return;
+            const child = target.querySelector('.ship');
+            // const firstChild =
+            if (!child) return;
+            const shipType = child.dataset.type;
+            const currentShipLoc = document.querySelectorAll(
+                `.ship[data-type="${shipType}"]`,
+            );
+            const firstChild = currentShipLoc[0];
+            const shipHead = firstChild.closest('.cor')
+
+            const positioning =
+                child.dataset.positioning === 'true' ? false : true;
+            // this.orientation = positioning;
+            const xCor = parseInt(shipHead.dataset.xCor);
+            const yCor = parseInt(shipHead.dataset.yCor);
+            const ship = createShip(shipType, ships[shipType],positioning);
+            
+            if (this.checkIfValidDrop(ship, xCor, yCor, positioning)) {
+                this.playerOne.gameBoard.removeShip(child.dataset.type);
+                this.playerOne.gameBoard.placeShip(
+                    ship,
+                    xCor,
+                    yCor,
+                    positioning,)
+        
+                this.resetBoardUI();
+                
+            }
+        });
+    }
 }
+// add orientation to ship

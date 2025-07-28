@@ -2,7 +2,7 @@ export function gameBoard(row = 10, col = 10) {
     if (!Number(row) || !Number(col)) throw new Error('input numbers ');
 
     let board = Array.from({ length: row }, () => Array(col).fill(''));
-    let OccupiedSpots = new Set()
+    let OccupiedSpots = new Set();
     function findAllShips(arr = board, i = 0, shipSet = new Set()) {
         const invalid = ['', 0, 'X'];
         if (i === arr.length) return shipSet;
@@ -28,7 +28,7 @@ export function gameBoard(row = 10, col = 10) {
                 }
                 board[xCor][yCor] = ship;
                 let OccupiedSpot = `${xCor},${yCor}`;
-                OccupiedSpots.add(OccupiedSpot)
+                OccupiedSpots.add(OccupiedSpot);
                 if (alignmentX) yCor++;
                 else xCor++;
             }
@@ -55,6 +55,16 @@ export function gameBoard(row = 10, col = 10) {
             return [...findAllShips()].every((ship) => ship.isSunk());
         },
 
-        occupiedLocs: () =>  OccupiedSpots
+        occupiedLocs: () => OccupiedSpots,
+        removeShip: (name) => {
+            for (let i = 0; i < board.length; i++) {
+                board[i].forEach((s, index) => {
+                    if (s.name === name) {
+                        board[i][index] = '';
+                        OccupiedSpots.delete(`${i},${index}`);
+                    }
+                });
+            }
+        },
     };
 }
