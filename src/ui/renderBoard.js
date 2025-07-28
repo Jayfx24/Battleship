@@ -18,8 +18,8 @@ export class createGame {
         this.dragStartLoc = null;
         this.orientation = true;
         this.isDragging = false;
-        this.rect = null
-        this.parentRect = null
+        this.rect = null;
+        this.parentRect = null;
     }
 
     game() {
@@ -223,13 +223,20 @@ export class createGame {
     }
 
     dragStart() {
-        document.querySelectorAll('.ship-layer').forEach((el) => {
-            el.addEventListener('mousedown', (e) => {
-                this.currentDraggable = el;
+        domController.boardWrapper.addEventListener('mousedown', (e) => {
+            const target = e.target.closest('.ship-layer');
+            if (!target) return;
+            this.currentDraggable = target;
 
-                this.mouseDown(e);
-            });
+            this.mouseDown(e);
         });
+        // document.querySelectorAll('.ship-layer').forEach((el) => {
+        //     el.addEventListener('mousedown', (e) => {
+        //         this.currentDraggable = el;
+
+        //         this.mouseDown(e);
+        //     });
+        // });
         this.rotateShip();
     }
 
@@ -242,8 +249,8 @@ export class createGame {
             this.rect.left - this.parentRect.left,
             this.rect.top - this.parentRect.top,
         ];
-        this.currentDraggable.style.position = 'absolute';
         this.currentDraggable.style.zIndex = 1000;
+        this.currentDraggable.style.position = 'absolute';
         this.offsetX = e.clientX - this.currentDraggable.offsetLeft;
         this.offsetY = e.clientY - this.currentDraggable.offsetTop;
         this.isDragging = true;
@@ -270,11 +277,12 @@ export class createGame {
     }
 
     mouseUp(e) {
+        if (!this.isDragging) return;
         e.preventDefault();
 
         // this.currentDraggable.style.cursor = 'move'
 
-        this.dragTarget(e), (this.isDragging = false);
+        this.dragTarget(e);
 
         domController.boardWrapper.removeEventListener(
             'mousemove',
@@ -290,43 +298,65 @@ export class createGame {
     }
     dragTarget(e) {
         e.preventDefault();
+        if (!this.isDragging) return;
+        this.isDragging = false;
         const shipEleRect =
             this.currentDraggable.firstElementChild.getBoundingClientRect();
+        const dropZone = domController.boardOne.getBoundingClientRect();
+        console.log(dropZone.left);
+        console.log(shipEleRect.left);
+        if (
+            shipEleRect.right <= dropZone.right &&
+            shipEleRect.left >= dropZone.left &&
+            shipEleRect.top >= dropZone.top &&
+            shipEleRect.bottom <= dropZone.bottom
+        ) {
+            this.currentDraggable.style.visibility = 'hidden';
+            const centerX = shipEleRect.left + shipEleRect.width / 2;
+            const centerY = shipEleRect.top + shipEleRect.height / 2;
+            const below = document.elementFromPoint(e.clientX, e.clientY);
+            const firstBelow = document.elementFromPoint(centerX, centerY);
 
-        // if(this.currentDraggable.left <= )
-        this.currentDraggable.style.visibility = 'hidden';
-        const centerX = shipEleRect.left + shipEleRect.width / 2;
-        const centerY = shipEleRect.top + shipEleRect.height / 2;
-        const below = document.elementFromPoint(e.clientX, e.clientY);
-        const firstBelow = document.elementFromPoint(centerX, centerY);
+            // console.log(below, firstBelow);
+            const ships = this.#shipsInfo();
 
-        // console.log(below, firstBelow);
-        const ships = this.#shipsInfo();
+            // use first ele of ship to find loc or curs
+            const target = firstBelow?.closest('.cor') || below.closest('.cor');
 
-        // use first ele of ship to find loc or curs
-        const target = firstBelow?.closest('.cor') || below.closest('.cor');
+            if (target) {
+                const type = this.currentDraggable.dataset.type;
+                const xCor = parseInt(target.dataset.xCor);
+                const yCor = parseInt(target.dataset.yCor);
 
-        if (target) {
-            const type = this.currentDraggable.dataset.type;
-            const xCor = parseInt(target.dataset.xCor);
-            const yCor = parseInt(target.dataset.yCor);
+                const ship = createShip(type, ships[type]);
 
-            const ship = createShip(type, ships[type]);
+                if (this.checkIfValidDrop(ship, xCor, yCor, this.orientation)) {
+                    this.playerOne.gameBoard.placeShip(
+                        ship,
+                        xCor,
+                        yCor,
+                        this.orientation,
+                    );
 
-            if (this.checkIfValidDrop(ship, xCor, yCor, this.orientation)) {
-                this.playerOne.gameBoard.placeShip(ship, xCor, yCor, this.orientation);
+                    this.resetBoardUI();
+                    // this.currentDraggable.style.visibility = 'visible';
+                    // this.dragOnBoard()
 
-                this.resetBoardUI();
-                // this.currentDraggable.style.visibility = 'visible';
-                // this.dragOnBoard()
-
-                return;
-            } else {
-                this.currentDraggable.style.visibility = 'visible';
-                this.currentDraggable.style.left = this.dragStartLoc[0] + 'px';
-                this.currentDraggable.style.top = this.dragStartLoc[1] + 'px';
-                return;
+                    return;
+                } else {
+                    this.currentDraggable.style.visibility = 'visible';
+                    this.currentDraggable.style.left =
+                        this.dragStartLoc[0] + 'px';
+                    this.currentDraggable.style.top =
+                        this.dragStartLoc[1] + 'px';
+                    return;
+                }
             }
+        } else {
+            this.currentDraggable.style.visibility = 'visible';
+            this.currentDraggable.style.left = this.dragStartLoc[0] + 'px';
+            this.currentDraggable.style.top = this.dragStartLoc[1] + 'px';
+            return;
         }
     }
     setPlayerPref(e) {
@@ -349,15 +379,15 @@ export class createGame {
     }
 
     checkIfValidDrop(ship, xCor, yCor, isHorizontal) {
-       
-
         if (!ship) return false;
         if (isHorizontal && yCor + ship.length > 10) return false;
         if (!isHorizontal && xCor + ship.length > 10) return false;
 
         const filled = this.playerOne.gameBoard.occupiedLocs();
-        if(filled.has(`${xCor},${yCor}`)) filled.delete(`${xCor},${yCor}`)
-        if (!this.utils.isEmpty(filled, xCor, yCor, ship.length, isHorizontal)) {
+        if (filled.has(`${xCor},${yCor}`)) filled.delete(`${xCor},${yCor}`);
+        if (
+            !this.utils.isEmpty(filled, xCor, yCor, ship.length, isHorizontal)
+        ) {
             console.log('workinh');
             return false;
         }
@@ -400,25 +430,25 @@ export class createGame {
                 `.ship[data-type="${shipType}"]`,
             );
             const firstChild = currentShipLoc[0];
-            const shipHead = firstChild.closest('.cor')
+            const shipHead = firstChild.closest('.cor');
 
             const positioning =
                 child.dataset.positioning === 'true' ? false : true;
             // this.orientation = positioning;
             const xCor = parseInt(shipHead.dataset.xCor);
             const yCor = parseInt(shipHead.dataset.yCor);
-            const ship = createShip(shipType, ships[shipType],positioning);
-            
+            const ship = createShip(shipType, ships[shipType], positioning);
+
             if (this.checkIfValidDrop(ship, xCor, yCor, positioning)) {
                 this.playerOne.gameBoard.removeShip(child.dataset.type);
                 this.playerOne.gameBoard.placeShip(
                     ship,
                     xCor,
                     yCor,
-                    positioning,)
-        
+                    positioning,
+                );
+
                 this.resetBoardUI();
-                
             }
         });
     }
