@@ -1,7 +1,12 @@
 import { Player } from '../modules/player.js';
 import { gameBoard } from '../modules/gameBoard.js';
 import { createShip } from '../modules/ship';
-import { domController, createForm, component } from './domController.js';
+import {
+    domController,
+    createForm,
+    component,
+    confirmPlacement,
+} from './domController.js';
 import { gameUtils } from '../modules/gameUtils.js';
 
 export class createGame {
@@ -11,7 +16,12 @@ export class createGame {
         this.playerTwo = new Player('Adams', gameBoard());
         this.currentPlayer = this.playerOne;
         this.activeBoard = null;
-        this.offsetX = this.offsetY = this.isDragging = false;
+        this.startX =
+            this.startY =
+            this.offsetX =
+            this.offsetY =
+            this.isDragging =
+                false;
         this.currentDraggable = null;
         this.bondMouseMove = this.mouseMove.bind(this);
         this.bondMouseUp = this.mouseUp.bind(this);
@@ -114,19 +124,20 @@ export class createGame {
                 player.gameBoard.placeShip(ship, xCor, yCor, isHorizontal);
             });
             this.utils.clearShipPos();
-        } else if (status === 'drag') {
-            Object.entries(ships).forEach(([key, value]) => {
-                let ship = createShip(key, value);
-                if (!(key in defaultShipsLoc)) return;
-                else if (defaultShipsLoc[key])
-                    player.gameBoard.placeShip(
-                        ship,
-                        defaultShipsLoc[key].xCor,
-                        defaultShipsLoc[key].yCor,
-                        true,
-                    );
-            });
         }
+        // else if (status === 'drag') {
+        //     Object.entries(ships).forEach(([key, value]) => {
+        //         let ship = createShip(key, value);
+        //         if (!(key in defaultShipsLoc)) return;
+        //         else if (defaultShipsLoc[key])
+        //             player.gameBoard.placeShip(
+        //                 ship,
+        //                 defaultShipsLoc[key].xCor,
+        //                 defaultShipsLoc[key].yCor,
+        //                 true,
+        //             );
+        //     });
+        // }
     }
 
     #handleBoxClick(e) {
@@ -186,7 +197,6 @@ export class createGame {
         component.placeHolder.classList.add('ship-holder');
 
         const ships = this.#shipsInfo();
-        const board = gameBoard(6, 6);
         const defaultShipsLoc = {
             Carrier: { xCor: 0, yCor: 0 },
             Battleship: { xCor: 1, yCor: 0 },
@@ -196,15 +206,12 @@ export class createGame {
         };
         let count = 0;
         Object.entries(ships).forEach(([key, value]) => {
-            count++;
-
             if (!(key in defaultShipsLoc)) return;
             else if (defaultShipsLoc[key]) {
                 let shipLayer = document.createElement('div');
                 shipLayer.classList.add('ship-layer');
                 shipLayer.classList.add(`${key}`);
                 shipLayer.dataset.type = key;
-                // shipLayer.draggable = true;
                 for (let i = 0; i < value; i++) {
                     let box = document.createElement('div');
                     box.classList.add('dock-ship');
@@ -215,7 +222,6 @@ export class createGame {
                 component.placeHolder.appendChild(shipLayer);
             }
         });
-        // this.placeShip(shipStor, 'drag',false);
 
         component.playerSetts.appendChild(component.placeHolder);
 
@@ -223,39 +229,39 @@ export class createGame {
     }
 
     dragStart() {
-        domController.boardWrapper.addEventListener('mousedown', (e) => {
-            const target = e.target.closest('.ship-layer');
-            if (!target) return;
-            this.currentDraggable = target;
+        // domController.boardWrapper.addEventListener('mousedown', (e) => {
+        //     const target = e.target.closest('.ship-layer');
+        //     if (!target) return;
+        //     this.currentDraggable = target;
 
-            this.mouseDown(e);
-        });
-        // document.querySelectorAll('.ship-layer').forEach((el) => {
-        //     el.addEventListener('mousedown', (e) => {
-        //         this.currentDraggable = el;
-
-        //         this.mouseDown(e);
-        //     });
+        //     this.mouseDown(e);
         // });
+        document.querySelectorAll('.ship-layer').forEach((el) => {
+            el.addEventListener('mousedown', (e) => {
+                this.currentDraggable = el;
+
+                this.mouseDown(e);
+            });
+        });
         this.rotateShip();
     }
 
     mouseDown(e) {
         e.preventDefault();
-        // const draggable = e.target
+
         this.rect = this.currentDraggable.getBoundingClientRect();
         this.parentRect = component.placeHolder.getBoundingClientRect();
         this.dragStartLoc = [
             this.rect.left - this.parentRect.left,
             this.rect.top - this.parentRect.top,
         ];
-        this.currentDraggable.style.zIndex = 1000;
-        this.currentDraggable.style.position = 'absolute';
-        this.offsetX = e.clientX - this.currentDraggable.offsetLeft;
-        this.offsetY = e.clientY - this.currentDraggable.offsetTop;
+
+        this.startX = e.clientX;
+        this.startY = e.clientY;
+        // this.offsetX = e.clientX - this.rect.left;
+        // this.offsetY = e.clientY - this.rect.top;
         this.isDragging = true;
 
-        this.currentDraggable.style.cursor = 'grabbing';
         domController.boardWrapper.addEventListener(
             'mousemove',
             this.bondMouseMove,
@@ -271,8 +277,11 @@ export class createGame {
         e.preventDefault();
 
         if (this.isDragging) {
-            this.currentDraggable.style.left = e.clientX - this.offsetX + 'px';
-            this.currentDraggable.style.top = e.clientY - this.offsetY + 'px';
+            const newX = e.clientX - this.startX;
+            const newY = e.clientY - this.startY;
+
+            this.currentDraggable.style.left = newX + 'px';
+            this.currentDraggable.style.top = newY + 'px';
         }
     }
 
@@ -280,9 +289,7 @@ export class createGame {
         if (!this.isDragging) return;
         e.preventDefault();
 
-        // this.currentDraggable.style.cursor = 'move'
-
-        this.dragTarget(e);
+        this.currentDraggable.style.cursor = 'move';
 
         domController.boardWrapper.removeEventListener(
             'mousemove',
@@ -292,6 +299,7 @@ export class createGame {
             'mouseup',
             this.bondMouseUp,
         );
+        this.dragTarget(e);
 
         this.currentDraggable = null;
         // this.dragStart()
@@ -303,62 +311,55 @@ export class createGame {
         const shipEleRect =
             this.currentDraggable.firstElementChild.getBoundingClientRect();
         const dropZone = domController.boardOne.getBoundingClientRect();
-        console.log(dropZone.left);
-        console.log(shipEleRect.left);
-        if (
-            shipEleRect.right <= dropZone.right &&
-            shipEleRect.left >= dropZone.left &&
-            shipEleRect.top >= dropZone.top &&
-            shipEleRect.bottom <= dropZone.bottom
-        ) {
-            this.currentDraggable.style.visibility = 'hidden';
-            const centerX = shipEleRect.left + shipEleRect.width / 2;
-            const centerY = shipEleRect.top + shipEleRect.height / 2;
-            const below = document.elementFromPoint(e.clientX, e.clientY);
-            const firstBelow = document.elementFromPoint(centerX, centerY);
 
-            // console.log(below, firstBelow);
-            const ships = this.#shipsInfo();
+        this.currentDraggable.style.visibility = 'hidden';
 
-            // use first ele of ship to find loc or curs
-            const target = firstBelow?.closest('.cor') || below.closest('.cor');
+        const centerX = shipEleRect.left + shipEleRect.width / 2;
+        const centerY = shipEleRect.top + shipEleRect.height / 2;
 
-            if (target) {
-                const type = this.currentDraggable.dataset.type;
-                const xCor = parseInt(target.dataset.xCor);
-                const yCor = parseInt(target.dataset.yCor);
+        const below = document.elementFromPoint(e.clientX, e.clientY);
+        const firstBelow = document.elementFromPoint(centerX, centerY);
 
-                const ship = createShip(type, ships[type]);
+        // console.log(below, firstBelow);
+        const ships = this.#shipsInfo();
 
-                if (this.checkIfValidDrop(ship, xCor, yCor, this.orientation)) {
-                    this.playerOne.gameBoard.placeShip(
-                        ship,
-                        xCor,
-                        yCor,
-                        this.orientation,
-                    );
+        // use first ele of ship to find loc or curs
+        const target = firstBelow?.closest('.cor') || below.closest('.cor');
 
-                    this.resetBoardUI();
-                    // this.currentDraggable.style.visibility = 'visible';
-                    // this.dragOnBoard()
+        const handleInvalidDrop = () => {
+            this.currentDraggable.style.visibility = 'visible';
+            this.currentDraggable.style.left = 0;
+            this.currentDraggable.style.top = 0;
+        };
 
-                    return;
-                } else {
-                    this.currentDraggable.style.visibility = 'visible';
-                    this.currentDraggable.style.left =
-                        this.dragStartLoc[0] + 'px';
-                    this.currentDraggable.style.top =
-                        this.dragStartLoc[1] + 'px';
-                    return;
+        if (target) {
+            // const playerBoard = this.currentPlayer.pl
+            const type = this.currentDraggable.dataset.type;
+            const xCor = parseInt(target.dataset.xCor);
+            const yCor = parseInt(target.dataset.yCor);
+
+            const ship = createShip(type, ships[type]);
+
+            if (this.checkIfValidDrop(ship, xCor, yCor, ship.orientation)) {
+                this.playerOne.gameBoard.placeShip(
+                    ship,
+                    xCor,
+                    yCor,
+                    ship.orientation,
+                );
+                this.resetBoardUI();
+                if (this.playerOne.gameBoard.findAllShips().size === 5) {
+                    confirmPlacement();
                 }
+                return;
+            } else {
+                handleInvalidDrop();
             }
         } else {
-            this.currentDraggable.style.visibility = 'visible';
-            this.currentDraggable.style.left = this.dragStartLoc[0] + 'px';
-            this.currentDraggable.style.top = this.dragStartLoc[1] + 'px';
-            return;
+            handleInvalidDrop();
         }
     }
+
     setPlayerPref(e) {
         e.preventDefault();
         const formData = new FormData(component.form);
@@ -378,17 +379,17 @@ export class createGame {
         component.form.reset();
     }
 
-    checkIfValidDrop(ship, xCor, yCor, isHorizontal) {
+    checkIfValidDrop(ship, xCor, yCor, isHor) {
         if (!ship) return false;
-        if (isHorizontal && yCor + ship.length > 10) return false;
-        if (!isHorizontal && xCor + ship.length > 10) return false;
+        if (isHor && yCor + ship.length > 10) return false;
+        if (!isHor && xCor + ship.length > 10) return false;
 
         const filled = this.playerOne.gameBoard.occupiedLocs();
+
         if (filled.has(`${xCor},${yCor}`)) filled.delete(`${xCor},${yCor}`);
-        if (
-            !this.utils.isEmpty(filled, xCor, yCor, ship.length, isHorizontal)
-        ) {
-            console.log('workinh');
+
+        if (!this.utils.isEmpty(filled, xCor, yCor, ship.length, isHor)) {
+            console.log('working');
             return false;
         }
 
