@@ -13,7 +13,17 @@ export const component = {
     form: document.createElement('form'),
     playerSetts : document.createElement('div'),
     placeHolder: document.createElement('div'),
-    dragBoard : document.createElement('div')
+    dragBoard : document.createElement('div'),
+    confirmPlacement: {
+        parent : document.createElement('div'),
+        text : document.createElement('span'),
+        confirmBtn: document.createElement('button'),
+
+        // parent : document.createElement('div'),
+
+        
+    }
+    ,
 };
 
 export function createForm() {
@@ -73,3 +83,25 @@ function toggleInput(e) {
     else input.classList.remove('hide');
 }
 
+export function confirmPlacement(){
+    component.playerSetts.innerText = ''
+    
+    const text = component.confirmPlacement.text
+    const btn = component.confirmPlacement.confirmBtn
+
+    text.textContent = 'Admiral, Confirm if you are pleased with the placement of the battle group'
+    btn.textContent = 'Pass the device to Player 2'
+
+
+    btn.addEventListener('click',()=>{
+        domController.boardOneWrapper.style.display = 'none'
+        domController.boardTwoWrapper.style.display = ''
+        domController.boardTwoWrapper.style.order = 2
+    })
+    component.confirmPlacement.parent.appendChild(text)
+    component.confirmPlacement.parent.appendChild(btn)
+    component.playerSetts.appendChild(component.confirmPlacement.parent)
+
+    
+    
+}
