@@ -3,20 +3,9 @@ export function gameBoard(row = 10, col = 10) {
 
     let board = Array.from({ length: row }, () => Array(col).fill(''));
     let OccupiedSpots = new Set();
-    function findAllShips(arr = board, i = 0, shipSet = new Set()) {
-        const invalid = ['', 0, 'X'];
-        if (i === arr.length) return shipSet;
 
-        for (let s of arr[i]) {
-            if (!invalid.includes(s) && !shipSet.has(s)) {
-                shipSet.add(s);
-            }
-        }
-
-        return findAllShips(arr, i + 1, shipSet);
-    }
     return {
-        placeShip: (ship, xCor, yCor, isVertical) => {
+        placeShip(ship, xCor, yCor, isVertical) {
             const alignmentX = isVertical;
             for (let i = 0; i < ship.length; i++) {
                 if (xCor < 0 || xCor > row - 1 || yCor < 0 || yCor > col - 1)
@@ -33,9 +22,8 @@ export function gameBoard(row = 10, col = 10) {
                 else xCor++;
             }
         },
-        getBoard: () => board,
 
-        receiveAttack: (xCor, yCor) => {
+        receiveAttack(xCor, yCor) {
             if (xCor < 0 || xCor > 9 || yCor < 0 || yCor > 9)
                 throw new Error('Out of bound');
 
@@ -50,13 +38,24 @@ export function gameBoard(row = 10, col = 10) {
                 board[xCor][yCor] = 0;
             }
         },
+        findAllShips(arr = board, i = 0, shipSet = new Set()) {
+            const invalid = ['', 0, 'X'];
+            if (i === arr.length) return shipSet;
 
-        isAllShipSunk: () => {
-            return [...findAllShips()].every((ship) => ship.isSunk());
+            for (let s of arr[i]) {
+                if (!invalid.includes(s) && !shipSet.has(s)) {
+                    shipSet.add(s);
+                }
+            }
+
+            return this.findAllShips(arr, i + 1, shipSet);
         },
 
-        occupiedLocs: () => OccupiedSpots,
-        removeShip: (name) => {
+        isAllShipSunk() {
+            return [...this.findAllShips()].every((ship) => ship.isSunk());
+        },
+
+        removeShip(name) {
             for (let i = 0; i < board.length; i++) {
                 board[i].forEach((s, index) => {
                     if (s.name === name) {
@@ -66,5 +65,7 @@ export function gameBoard(row = 10, col = 10) {
                 });
             }
         },
+        getBoard: () => board,
+        occupiedLocs: () => OccupiedSpots,
     };
 }
