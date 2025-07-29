@@ -6,6 +6,7 @@ import {
     createForm,
     component,
     confirmPlacement,
+    resetPlacementBoard,
 } from './domController.js';
 import { gameUtils } from '../modules/gameUtils.js';
 
@@ -16,6 +17,8 @@ export class createGame {
         this.playerTwo = new Player('Adams', gameBoard());
         this.currentPlayer = this.playerOne;
         this.activeBoard = null;
+        this.currentPlayerPlacement = this.playerOne;
+        this.activePlacementBoard = domController.boardOne;
         this.startX =
             this.startY =
             this.offsetX =
@@ -188,8 +191,6 @@ export class createGame {
             this.playerTwo.gameBoard.getBoard(),
             domController.boardTwo,
         );
-
-        // this.dragEnd()
     }
 
     shipStorage() {
@@ -239,11 +240,14 @@ export class createGame {
         document.querySelectorAll('.ship-layer').forEach((el) => {
             el.addEventListener('mousedown', (e) => {
                 this.currentDraggable = el;
-
+                console.log('hereeeeea');
                 this.mouseDown(e);
             });
         });
-        this.rotateShip();
+        this.activePlacementBoard.addEventListener(
+            'click',
+            this.rotateShip.bind(this),
+        );
     }
 
     mouseDown(e) {
@@ -310,7 +314,7 @@ export class createGame {
         this.isDragging = false;
         const shipEleRect =
             this.currentDraggable.firstElementChild.getBoundingClientRect();
-        const dropZone = domController.boardOne.getBoundingClientRect();
+        const dropZone = this.activePlacementBoard.getBoundingClientRect();
 
         this.currentDraggable.style.visibility = 'hidden';
 
@@ -333,7 +337,7 @@ export class createGame {
         };
 
         if (target) {
-            // const playerBoard = this.currentPlayer.pl
+            const playerBoard = this.currentPlayerPlacement.gameBoard;
             const type = this.currentDraggable.dataset.type;
             const xCor = parseInt(target.dataset.xCor);
             const yCor = parseInt(target.dataset.yCor);
@@ -341,15 +345,16 @@ export class createGame {
             const ship = createShip(type, ships[type]);
 
             if (this.checkIfValidDrop(ship, xCor, yCor, ship.orientation)) {
-                this.playerOne.gameBoard.placeShip(
-                    ship,
-                    xCor,
-                    yCor,
-                    ship.orientation,
-                );
+                playerBoard.placeShip(ship, xCor, yCor, ship.orientation);
                 this.resetBoardUI();
-                if (this.playerOne.gameBoard.findAllShips().size === 5) {
+
+                if (playerBoard.findAllShips().size === 5) {
                     confirmPlacement();
+
+                    component.confirmPlacement.confirmBtn.addEventListener(
+                        'click',
+                        this.#handleConfirm.bind(this),
+                    );
                 }
                 return;
             } else {
@@ -359,7 +364,19 @@ export class createGame {
             handleInvalidDrop();
         }
     }
+    #handleConfirm() {
+        if (
+            this.currentPlayerPlacement.gameBoard === this.playerOne.gameBoard
+        ) {
+            resetPlacementBoard();
+            this.currentPlayerPlacement = this.playerTwo;
+            this.activePlacementBoard = domController.boardTwo;
+            
 
+            this.gameTurn();
+            this.shipStorage();
+        } else console.log('start game');
+    }
     setPlayerPref(e) {
         e.preventDefault();
         const formData = new FormData(component.form);
@@ -384,12 +401,14 @@ export class createGame {
         if (isHor && yCor + ship.length > 10) return false;
         if (!isHor && xCor + ship.length > 10) return false;
 
-        const filled = this.playerOne.gameBoard.occupiedLocs();
-
+        const filled = this.currentPlayerPlacement.gameBoard.occupiedLocs();
+// 
         if (filled.has(`${xCor},${yCor}`)) filled.delete(`${xCor},${yCor}`);
 
         if (!this.utils.isEmpty(filled, xCor, yCor, ship.length, isHor)) {
             console.log('working');
+           
+            console.log(this.currentPlayerPlacement);
             return false;
         }
 
@@ -397,13 +416,13 @@ export class createGame {
     }
 
     dragOnBoard() {
-        domController.boardOne.addEventListener('mousedown', (e) => {
+        this.activePlacementBoard.addEventListener('mousedown', (e) => {
             const target = e.target.closest('.cor');
 
             if (!target) return;
             const child = target.querySelector('.ship');
             if (!child) return;
-            const ship = document.querySelector(
+            const ship = this.activePlacementBoard.parentElement.querySelector(
                 `.ship-layer[data-type="${child.dataset.type}"]`,
             );
             // console.log(target.closest('.ship-layer'));
@@ -412,46 +431,46 @@ export class createGame {
             ship.style.left = ship.style.left - e.clientX + 'px';
             ship.style.top = ship.style.top - e.clientY + 'px';
 
-            this.playerOne.gameBoard.removeShip(child.dataset.type);
+            this.currentPlayerPlacement.gameBoard.removeShip(
+                child.dataset.type,
+            );
             this.resetBoardUI();
         });
     }
 
-    rotateShip() {
+    rotateShip(e) {
         const ships = this.#shipsInfo();
-        domController.boardOne.addEventListener('click', (e) => {
-            const target = e.target.closest('.cor');
 
-            if (!target) return;
-            const child = target.querySelector('.ship');
-            // const firstChild =
-            if (!child) return;
-            const shipType = child.dataset.type;
-            const currentShipLoc = document.querySelectorAll(
-                `.ship[data-type="${shipType}"]`,
-            );
-            const firstChild = currentShipLoc[0];
-            const shipHead = firstChild.closest('.cor');
+        const target = e.target.closest('.cor');
+        const playerBoard = this.currentPlayerPlacement.gameBoard;
+        if (!target) return;
+        const child = target.querySelector('.ship');
+       
+        // const firstChild =
+        if (!child) return;
+        const shipType = child.dataset.type;
+        const currentShipLoc = this.activePlacementBoard.parentElement.querySelectorAll(
+            `.ship[data-type="${shipType}"]`,
+        );
+        
+        const firstChild = currentShipLoc[0];
+        const shipHead = firstChild.closest('.cor');
 
-            const positioning =
-                child.dataset.positioning === 'true' ? false : true;
-            // this.orientation = positioning;
-            const xCor = parseInt(shipHead.dataset.xCor);
-            const yCor = parseInt(shipHead.dataset.yCor);
-            const ship = createShip(shipType, ships[shipType], positioning);
+        const positioning = child.dataset.positioning === 'true' ? false : true;
+        // this.orientation = positioning;
+        const xCor = parseInt(shipHead.dataset.xCor);
+        const yCor = parseInt(shipHead.dataset.yCor);
+        console.log(xCor, yCor);
+        const ship = createShip(shipType, ships[shipType], positioning);
 
-            if (this.checkIfValidDrop(ship, xCor, yCor, positioning)) {
-                this.playerOne.gameBoard.removeShip(child.dataset.type);
-                this.playerOne.gameBoard.placeShip(
-                    ship,
-                    xCor,
-                    yCor,
-                    positioning,
-                );
+        if (this.checkIfValidDrop(ship, xCor, yCor, positioning)) {
+            playerBoard.removeShip(child.dataset.type);
+            
+            playerBoard.placeShip(ship, xCor, yCor, positioning);
+            console.log([...playerBoard.occupiedLocs()])
 
-                this.resetBoardUI();
-            }
-        });
+            this.resetBoardUI();
+        }
     }
 }
 // add orientation to ship
