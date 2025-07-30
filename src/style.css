@@ -107,7 +107,6 @@ main{
   /* flex-direction: column; */
   gap: .25rem;
   /* display: flex; */
-  position: relative;
   border: 1px solid;
   
 }

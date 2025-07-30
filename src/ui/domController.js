@@ -21,6 +21,7 @@ export const component = {
 
         // parent : document.createElement('div'),
     },
+    randomize : document.createElement('button')
 };
 
 export function createForm() {
@@ -80,14 +81,16 @@ function toggleInput(e) {
     else input.classList.remove('hide');
 }
 
-export function confirmPlacement() {
+export function confirmPlacement(playerOne) {
     component.playerSetts.innerText = '';
 
     const text = component.confirmPlacement.text;
     const btn = component.confirmPlacement.confirmBtn;
     text.textContent =
         'Admiral, Confirm if you are pleased with the placement of the battle group';
-    btn.textContent = 'Pass the device to Player 2';
+    const btnTxt = playerOne ? 'Pass the device to Player 2': 'Start Game'
+  
+    btn.textContent = btnTxt;
 
     component.confirmPlacement.parent.appendChild(text);
     component.confirmPlacement.parent.appendChild(btn);
@@ -100,5 +103,9 @@ export function resetPlacementBoard() {
     domController.boardTwoWrapper.style.order = 2;
     component.placeHolder.innerHTML = '';
     component.playerSetts.innerHTML = '';
+}
 
+export function afterPlacement() {
+    component.playerSetts.style.display = 'none';
+    domController.boardOneWrapper.style.display = '';
 }
