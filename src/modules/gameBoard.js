@@ -1,12 +1,13 @@
 export function gameBoard(row = 10, col = 10) {
     if (!Number(row) || !Number(col)) throw new Error('input numbers ');
 
-    let board = Array.from({ length: row }, () => Array(col).fill(''));
-    let OccupiedSpots = new Set();
+    const board = Array.from({ length: row }, () => Array(col).fill(''));
+    const OccupiedSpots = new Set();
+    const hitSpots = new Set();
 
     return {
-        placeShip(ship, xCor, yCor, isVertical) {
-            const alignmentX = isVertical;
+        placeShip(ship, xCor, yCor, isHorizontal) {
+            const alignmentX = isHorizontal;
             for (let i = 0; i < ship.length; i++) {
                 if (xCor < 0 || xCor > row - 1 || yCor < 0 || yCor > col - 1)
                     throw new Error('Out of bound');
@@ -24,19 +25,24 @@ export function gameBoard(row = 10, col = 10) {
         },
 
         receiveAttack(xCor, yCor) {
+             let hitLoc = `${xCor},${yCor}`;
+
             if (xCor < 0 || xCor > 9 || yCor < 0 || yCor > 9)
                 throw new Error('Out of bound');
 
-            if (board[xCor][yCor] === 'X' || board[xCor][yCor] === 0)
+            if (board[xCor][yCor] === 'X' || board[xCor][yCor] === 0 || hitSpots.has(hitLoc))
                 throw new Error('Can not hit the same coordinate twice');
 
             if (board[xCor][yCor] !== '') {
                 let shipHit = board[xCor][yCor];
                 shipHit.hit();
+
                 board[xCor][yCor] = 'X';
             } else {
                 board[xCor][yCor] = 0;
             }
+           
+            hitSpots.add(hitLoc);
         },
         findAllShips(arr = board, i = 0, shipSet = new Set()) {
             const invalid = ['', 0, 'X'];
@@ -67,5 +73,6 @@ export function gameBoard(row = 10, col = 10) {
         },
         getBoard: () => board,
         occupiedLocs: () => OccupiedSpots,
+        hitSpots: () => hitSpots,
     };
 }
