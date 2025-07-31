@@ -1,7 +1,6 @@
 // generate random coordinates
 
 export function gameUtils() {
-    let shots = new Set();
     let max = 10;
     let min = 0;
     let shipPos = new Set();
@@ -9,15 +8,6 @@ export function gameUtils() {
         return Math.floor(Math.random() * (max - min)) + min;
     }
 
-    function computerPlay() {
-        let x = generateRandInt();
-        let y = generateRandInt();
-        let key = `${x},${y}`;
-        if (!shots.has(key)) {
-            shots.add(key);
-            return key;
-        } else return computerPlay();
-    }
 
     function generateShipCor(length, position) {
         if (position == null || position === '')
@@ -69,7 +59,7 @@ export function gameUtils() {
         return true;
     }
     return {
-        computerPlay,
+        generateRandInt,
         generateShipCor,
         clearShipPos: () => shipPos.clear(),
         isEmpty,

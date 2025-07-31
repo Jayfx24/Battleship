@@ -10,12 +10,13 @@ import {
     afterPlacement,
 } from './domController.js';
 import { gameUtils } from '../modules/gameUtils.js';
+import { botPlay } from '../modules/botLogic.js';
 
 export class createGame {
     constructor() {
         this.utils = gameUtils();
         this.playerOne = new Player('Player One', gameBoard());
-        this.playerTwo = new Player('Adams', gameBoard());
+        this.playerTwo = new Player('Player Two', gameBoard());
         this.currentPlayer = this.playerOne;
         this.activeBoard = domController.boardTwo;
         this.currentPlayerPlacement = this.playerOne;
@@ -25,6 +26,7 @@ export class createGame {
             this.offsetX =
             this.offsetY =
             this.isDragging =
+            this.botPlay =
             this.mousedownFired =
                 false;
         this.currentDraggable = null;
@@ -36,6 +38,7 @@ export class createGame {
         this.orientation = true;
         this.rect = null;
         this.parentRect = null;
+        this.vsBot = null;
         // this.iRotate = false
     }
 
@@ -131,19 +134,6 @@ export class createGame {
             });
             this.utils.clearShipPos();
         }
-        // else if (status === 'drag') {
-        //     Object.entries(ships).forEach(([key, value]) => {
-        //         let ship = createShip(key, value);
-        //         if (!(key in defaultShipsLoc)) return;
-        //         else if (defaultShipsLoc[key])
-        //             player.gameBoard.placeShip(
-        //                 ship,
-        //                 defaultShipsLoc[key].xCor,
-        //                 defaultShipsLoc[key].yCor,
-        //                 true,
-        //             );
-        //     });
-        // }
     }
 
     #handleBoxClick(e) {
@@ -161,12 +151,9 @@ export class createGame {
         const xCor = target.dataset.xCor;
         const yCor = target.dataset.yCor;
         let ship = this.currentPlayer.gameBoard.getBoard()[xCor][yCor];
-
-        this.currentPlayer.gameBoard.receiveAttack(xCor, yCor);
+        this.sendShot(xCor, yCor);
         if (ship)
             console.log(`${ship.name}: ${ship.isSunk() ? 'sunk' : 'Not Sunk'}`);
-        this.resetBoardUI();
-        this.gameTurn();
     }
 
     gameTurn() {
@@ -179,7 +166,7 @@ export class createGame {
                 ? domController.boardOne
                 : domController.boardTwo;
 
-        console.log(this.currentPlayer, this.activeBoard);
+        if (this.vsBot) this.botTurn();
     }
 
     #confirmShipsStatus(gameBoard) {
@@ -199,6 +186,12 @@ export class createGame {
             this.playerTwo.gameBoard.getBoard(),
             domController.boardTwo,
         );
+
+        if (this.vsBot) {
+            domController.boardTwoWrapper
+                .querySelectorAll('.ship')
+                .forEach((el) => el.classList.add('hide'));
+        }
     }
 
     shipStorage() {
@@ -238,12 +231,6 @@ export class createGame {
     }
 
     dragStart() {
-        // component.playerSetts.addEventListener('mousedown', (e) => {
-        //     this.mouseDown(e);
-        // });
-        // this.activePlacementBoard.addEventListener('mousedown', (e) => {
-        //     this.mouseDown(e);
-        // });
         document.querySelectorAll('.ship-layer').forEach((el) => {
             el.addEventListener('mousedown', (e) => {
                 this.mouseDown(e);
@@ -389,15 +376,22 @@ export class createGame {
 
         let clickProcess = null;
         if (playerBoard.findAllShips().size === 5) {
-            if (this.currentPlayerPlacement === this.playerOne) {
-                firstPlayer = true;
-
+            if (this.vsBot) {
                 confirmPlacement(firstPlayer);
-                clickProcess = () => this.#handleConfirm();
-            } else {
-                confirmPlacement(firstPlayer);
-
                 clickProcess = () => this.#handleAfterPlacement();
+                this.placeShip(this.playerTwo);
+                // this.gameTurn()
+            } else {
+                if (this.currentPlayerPlacement === this.playerOne) {
+                    firstPlayer = true;
+
+                    confirmPlacement(firstPlayer);
+                    clickProcess = () => this.#handleConfirm();
+                } else {
+                    confirmPlacement(firstPlayer);
+
+                    clickProcess = () => this.#handleAfterPlacement();
+                }
             }
 
             component.confirmPlacement.confirmBtn.addEventListener(
@@ -415,10 +409,6 @@ export class createGame {
         this.shipStorage();
     }
     #handleAfterPlacement() {
-        // const currParent = component.randomize.parentNode;
-        // if (currParent) {
-        //     currParent.removeChild(component.randomize);
-        // }
         domController.randomizeBtns.forEach((el) => el.parentNode.remove());
 
         afterPlacement();
@@ -428,15 +418,22 @@ export class createGame {
             'click',
             this.boundRotate,
         );
-
-        domController.boardWrapper.addEventListener(
-            'click',
-            this.#handleBoxClick.bind(this),
-        );
         this.activePlacementBoard.removeEventListener(
             'mousedown',
             this.boundOnBoard,
         );
+        if (this.vsBot) {
+            domController.boardTwoWrapper.style.display = '';
+            domController.boardTwo.addEventListener(
+                'click',
+                this.#handleBoxClick.bind(this),
+            );
+        } else {
+            domController.boardWrapper.addEventListener(
+                'click',
+                this.#handleBoxClick.bind(this),
+            );
+        }
 
         this.resetBoardUI();
     }
@@ -445,15 +442,16 @@ export class createGame {
         const formData = new FormData(component.form);
         const data = Object.fromEntries(formData.entries());
         const { playerChoice, playerOneName, playerTwoName } = data;
+        if (playerChoice === 'vsBot') {
+            this.vsBot = true;
+            this.botPlay = new botPlay();
+        }
 
         if (playerOneName) {
             domController.playerOneInfo.textContent = playerOneName;
         }
         // playerTwo.type === 'real' ? playerTwo.playerName || 'Player Two' : 'AI';
 
-        // console.log(playerChoice);
-        // console.log(playerOneName);
-        // console.log(playerTwoName);
         this.shipStorage();
         this.randomLogic();
         component.form.reset();
@@ -542,12 +540,34 @@ export class createGame {
             component.playerSetts.innerHTML = '';
             this.#handlePlacement(this.currentPlayerPlacement.gameBoard);
             // this.resetBoardUI()
-            this.gameTurn();
+            // this.gameTurn();
         };
         domController.randomizeBtns.forEach((el) => {
-            el.parentNode.classList.remove('hide')
+            el.parentNode.classList.remove('hide');
             el.addEventListener('click', rand);
         });
+    }
+
+    sendShot(xCor, yCor) {
+        const hitLoc = { xCor, yCor };
+        const receivingPlayer = this.currentPlayer.gameBoard;
+        const isValidShot = receivingPlayer.hitSpots();
+        if (!isValidShot.has(hitLoc)) {
+            receivingPlayer.receiveAttack(xCor, yCor);
+
+            this.resetBoardUI();
+            this.gameTurn();
+        }
+        // Else show you cant;t hit the same spot twice
+    }
+
+    botTurn() {
+        if (this.currentPlayer !== this.playerOne) {
+            return;
+        }
+        const { xCor, yCor } = this.botPlay.play();
+        console.log(xCor,yCor)
+        this.sendShot(xCor, yCor);
     }
 }
 // add orientation to ship
