@@ -136,3 +136,8 @@ main{
 .over{
   border: 2px solid blue;
 }
+
+
+.hide{
+  display: none;
+}

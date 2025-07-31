@@ -6,6 +6,7 @@ export const domController = {
     boardTwoWrapper: document.querySelector('.board__two__wrapper'),
     playerOneInfo: document.querySelector('.player__one__info'),
     playerTwoInfo: document.querySelector('.player__two__info'),
+    randomizeBtns : document.querySelectorAll('.randomize')
 
     // cors : document.querySelectorAll('.cor')
 };
@@ -21,6 +22,7 @@ export const component = {
 
         // parent : document.createElement('div'),
     },
+    randSpan : document.createElement('span'),
     randomize : document.createElement('button')
 };
 

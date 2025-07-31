@@ -45,7 +45,7 @@ export function gameUtils() {
         //     shipPos.add(OccupiedSpot);
         // }
 
-        console.log(xCor, yCor);
+       
         return { xCor, yCor };
     }
 
