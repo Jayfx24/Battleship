@@ -1,6 +1,7 @@
 // generate random coordinates
 
 export function gameUtils() {
+    const newPos = possibleShots();
     let max = 10;
     let min = 0;
     let shipPos = new Set();
@@ -8,13 +9,15 @@ export function gameUtils() {
         return Math.floor(Math.random() * (max - min)) + min;
     }
 
-
     function generateShipCor(length, position) {
         if (position == null || position === '')
             throw new Error('Orientation/direction not added');
 
+        // const cor = newPos.pop();
         const xCor = generateRandInt();
         const yCor = generateRandInt();
+
+        // const { xCor, yCor } = cor;y
 
         const mainAxis = position ? yCor : xCor;
 
@@ -23,6 +26,7 @@ export function gameUtils() {
 
         // add ship occupied spots to shipPos
         if (!isEmpty(shipPos, xCor, yCor, length, position)) {
+            // newPos.unshift(cor)
             return generateShipCor(length, position);
         }
         // for (let i = 0; i < length; i++) {
@@ -35,7 +39,6 @@ export function gameUtils() {
         //     shipPos.add(OccupiedSpot);
         // }
 
-       
         return { xCor, yCor };
     }
 
@@ -58,7 +61,30 @@ export function gameUtils() {
         // console.log(holder)
         return true;
     }
+
+    function possibleShots() {
+        const arr1 = Array.from({ length: 10 }, (v, i) => i);
+        const arr2 = Array.from({ length: 10 }, (v, i) => i);
+        const validShots = [];
+        for (let i = 0; i < arr1.length; i++) {
+            for (let v = 0; v < arr2.length; v++) {
+                validShots.push({ xCor: arr1[i], yCor: arr2[v] });
+            }
+        }
+        return shuffle(validShots);
+    }
+
+    function shuffle(arr) {
+        const newArr = [...arr];
+        for (let i = newArr.length - 1; i > 0; i--) {
+            let j = Math.floor(Math.random() * (i + 1));
+            [newArr[i], newArr[j]] = [newArr[j], newArr[i]];
+        }
+        // console.log(newArr);
+        return newArr;
+    }
     return {
+        possibleShots,
         generateRandInt,
         generateShipCor,
         clearShipPos: () => shipPos.clear(),

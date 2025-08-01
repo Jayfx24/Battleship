@@ -28,6 +28,7 @@ export class createGame {
             this.isDragging =
             this.botPlay =
             this.mousedownFired =
+            this.gameStarted =
                 false;
         this.currentDraggable = null;
         this.bondMouseMove = this.mouseMove.bind(this);
@@ -118,6 +119,10 @@ export class createGame {
         };
 
         if (status === 'random') {
+            Object.entries(ships).forEach((key) => {
+                player.gameBoard.removeShip(key[0]);
+            });
+
             Object.entries(ships).forEach(([key, value]) => {
                 const isHorizontal = Math.random() < 0.5 ? true : false;
 
@@ -151,9 +156,14 @@ export class createGame {
         const xCor = target.dataset.xCor;
         const yCor = target.dataset.yCor;
         let ship = this.currentPlayer.gameBoard.getBoard()[xCor][yCor];
+        let shipHit = false;
+        let isSunk = ship.isSunk();
         this.sendShot(xCor, yCor);
-        if (ship)
-            console.log(`${ship.name}: ${ship.isSunk() ? 'sunk' : 'Not Sunk'}`);
+        if (ship) {
+            console.log(`${ship.name}: ${isSunk ? 'sunk' : 'Not Sunk'}`);
+            shipHit = ship.getHits() > 0 ? true : false;
+        }
+        if (this.vsBot && this.gameStarted) this.botTurn(shipHit, isSunk);
     }
 
     gameTurn() {
@@ -165,8 +175,6 @@ export class createGame {
             this.currentPlayer === this.playerOne
                 ? domController.boardOne
                 : domController.boardTwo;
-
-        if (this.vsBot) this.botTurn();
     }
 
     #confirmShipsStatus(gameBoard) {
@@ -187,11 +195,11 @@ export class createGame {
             domController.boardTwo,
         );
 
-        if (this.vsBot) {
-            domController.boardTwoWrapper
-                .querySelectorAll('.ship')
-                .forEach((el) => el.classList.add('hide'));
-        }
+        // if (this.vsBot) {
+        //     domController.boardTwoWrapper
+        //         .querySelectorAll('.ship')
+        //         .forEach((el) => el.classList.add('hide'));
+        // }
     }
 
     shipStorage() {
@@ -378,9 +386,9 @@ export class createGame {
         if (playerBoard.findAllShips().size === 5) {
             if (this.vsBot) {
                 confirmPlacement(firstPlayer);
-                clickProcess = () => this.#handleAfterPlacement();
-                this.placeShip(this.playerTwo);
-                // this.gameTurn()
+                (clickProcess = () => this.#handleAfterPlacement()),
+                    this.placeShip(this.playerTwo);
+                // return
             } else {
                 if (this.currentPlayerPlacement === this.playerOne) {
                     firstPlayer = true;
@@ -410,9 +418,10 @@ export class createGame {
     }
     #handleAfterPlacement() {
         domController.randomizeBtns.forEach((el) => el.parentNode.remove());
-
+        // this.currentPlayerPlacement = this.playerTwo
         afterPlacement();
         this.gameTurn();
+        this.gameStarted = true;
 
         this.activePlacementBoard.removeEventListener(
             'click',
@@ -428,6 +437,7 @@ export class createGame {
                 'click',
                 this.#handleBoxClick.bind(this),
             );
+            // this.randomLogic()
         } else {
             domController.boardWrapper.addEventListener(
                 'click',
@@ -445,6 +455,7 @@ export class createGame {
         if (playerChoice === 'vsBot') {
             this.vsBot = true;
             this.botPlay = new botPlay();
+            // this.botPlay.aiShots()
         }
 
         if (playerOneName) {
@@ -530,17 +541,11 @@ export class createGame {
     }
 
     randomLogic() {
-        const ships = this.#shipsInfo();
+        // change func name
         const rand = () => {
-            Object.entries(ships).forEach((key) =>
-                this.currentPlayerPlacement.gameBoard.removeShip(key[0]),
-            );
-
             this.placeShip(this.currentPlayerPlacement);
             component.playerSetts.innerHTML = '';
             this.#handlePlacement(this.currentPlayerPlacement.gameBoard);
-            // this.resetBoardUI()
-            // this.gameTurn();
         };
         domController.randomizeBtns.forEach((el) => {
             el.parentNode.classList.remove('hide');
@@ -561,12 +566,15 @@ export class createGame {
         // Else show you cant;t hit the same spot twice
     }
 
-    botTurn() {
-        if (this.currentPlayer !== this.playerOne) {
-            return;
+    botTurn(shipHit, isSunk) {
+        if (this.currentPlayer !== this.playerOne) return;
+
+        if (shipHit && !isSunk) {
+            const { xCor, yCor } = this.botPlay.isHit(shipHit, isSunk);
+            return this.sendShot(xCor, yCor);
         }
-        const { xCor, yCor } = this.botPlay.play();
-        console.log(xCor,yCor)
+
+        const { xCor, yCor } = this.botPlay.nextShot();
         this.sendShot(xCor, yCor);
     }
 }
