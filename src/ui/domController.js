@@ -1,12 +1,13 @@
 export const domController = {
-    boardWrapper: document.querySelector('.board-wrapper'),
-    boardOne: document.querySelector('.board-one'),
-    boardTwo: document.querySelector('.board-two'),
-    boardOneWrapper: document.querySelector('.board__one__wrapper'),
-    boardTwoWrapper: document.querySelector('.board__two__wrapper'),
-    playerOneInfo: document.querySelector('.player__one__info'),
-    playerTwoInfo: document.querySelector('.player__two__info'),
-    randomizeBtns : document.querySelectorAll('.randomize')
+    boardContainer: document.querySelector('.board-container'),
+    boardWrapper: document.querySelector('.board__wrapper'),
+    boardOne: document.querySelector('.board--one'),
+    boardTwo: document.querySelector('.board--two'),
+    boardOneWrapper: document.querySelector('.board__wrapper--one'),
+    boardTwoWrapper: document.querySelector('.board__wrapper--two'),
+    playerOneInfo: document.querySelector('.board__player-info--one'),
+    playerTwoInfo: document.querySelector('.board__player-info--two'),
+    randomizeBtns : document.querySelectorAll('.board__button--randomize')
 
     // cors : document.querySelectorAll('.cor')
 };
@@ -29,7 +30,7 @@ export const component = {
 export function createForm() {
     domController.boardTwoWrapper.style.display = 'none';
 
-    component.playerSetts.className = 'player__settings';
+    component.playerSetts.className = 'board__player_settings';
 
     component.form.innerHTML = `<div class="">
                         <input
@@ -71,7 +72,7 @@ export function createForm() {
 
     component.form.addEventListener('click', toggleInput);
     component.playerSetts.appendChild(component.form);
-    domController.boardWrapper.appendChild(component.playerSetts);
+    domController.boardContainer.appendChild(component.playerSetts);
 }
 
 function toggleInput(e) {

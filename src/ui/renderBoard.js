@@ -151,19 +151,33 @@ export class createGame {
         if (!cor) return;
         if (cor.querySelector('.missed') || cor.querySelector('.ship-hit'))
             return;
-        if (!cor.closest(`.${this.activeBoard.className}`)) return;
+        if (!this.activeBoard.contains(cor)) return;
+
         // send Cor
         const xCor = target.dataset.xCor;
         const yCor = target.dataset.yCor;
         let ship = this.currentPlayer.gameBoard.getBoard()[xCor][yCor];
-        let shipHit = false;
-        let isSunk = ship.isSunk();
+        let isSunk,
+            shipHit = null;
         this.sendShot(xCor, yCor);
-        if (ship) {
-            console.log(`${ship.name}: ${isSunk ? 'sunk' : 'Not Sunk'}`);
-            shipHit = ship.getHits() > 0 ? true : false;
+        // if (ship) {
+        //     console.log(`${ship.name}: ${ship.isSunk() ? 'sunk' : 'Not Sunk'}`);
+        // }
+        if (this.vsBot &&
+            this.gameStarted &&
+            this.currentPlayer === this.playerOne) {
+            
+            // let   eShip = this.currentPlayer.gameBoard.getBoard()[xCor][yCor];
+            //  //  need a function that send cor and listen to changes
+            // if (eShip) {
+            //     isSunk = eShip.isSunk?.() ?? null;
+            //     shipHit = eShip.getHits() > 0 ? true : false;
+            //     console.log(typeof eShip)
+            //     console.log(isSunk)
+            //     console.log(shipHit)
+            // }
+            this.botTurn(shipHit, isSunk);
         }
-        if (this.vsBot && this.gameStarted) this.botTurn(shipHit, isSunk);
     }
 
     gameTurn() {
@@ -244,14 +258,14 @@ export class createGame {
                 this.mouseDown(e);
             });
         });
-        this.activePlacementBoard.addEventListener(
-            'mousedown',
-            this.boundOnBoard,
-        );
         // this.activePlacementBoard.addEventListener(
-        //     'click',
-        //     this.boundRotate,
+        //     'mousedown',
+        //     this.boundOnBoard,
         // );
+        this.activePlacementBoard.addEventListener(
+            'click',
+            this.boundRotate,
+        );
     }
 
     mouseDown(e) {
@@ -275,12 +289,12 @@ export class createGame {
         // this.offsetY = e.clientY - this.rect.top;
         this.isDragging = true;
 
-        domController.boardWrapper.addEventListener(
+        domController.boardContainer.addEventListener(
             'mousemove',
             this.bondMouseMove,
         );
 
-        domController.boardWrapper.addEventListener(
+        domController.boardContainer.addEventListener(
             'mouseup',
             this.bondMouseUp,
         );
@@ -569,12 +583,8 @@ export class createGame {
     botTurn(shipHit, isSunk) {
         if (this.currentPlayer !== this.playerOne) return;
 
-        if (shipHit && !isSunk) {
-            const { xCor, yCor } = this.botPlay.isHit(shipHit, isSunk);
-            return this.sendShot(xCor, yCor);
-        }
-
-        const { xCor, yCor } = this.botPlay.nextShot();
+        if (isSunk) this.botPlay.isAfloat = null;
+        const { xCor, yCor } = this.botPlay.nextShot(shipHit, isSunk);
         this.sendShot(xCor, yCor);
     }
 }
