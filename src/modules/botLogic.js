@@ -6,55 +6,126 @@ export class botPlay {
         this.shots = new Set();
         this.firedShots = new Set();
         this.validShots = this.utils.possibleShots();
-        this.hitCor = null;
+        this.shotDirection = [];
+        this.initialHit = null;
         this.currentShot = null;
-        this.left = this.right = this.bottom = this.top = null;
+        this.dir =
+            this.left =
+            this.right =
+            this.bottom =
+            this.top =
+            this.isAfloat =
+            this.followUpHit =
+            this.shipHit =
+                null;
     }
 
-    // play() {
-    //     let xCor = this.utils.generateRandInt();
-    //     let yCor = this.utils.generateRandInt();
-
-    //     let key = `${xCor},${yCor}`;
-
-    //     if (!this.shots.has(key)) {
-    //         this.shots.add(key);
-    //         return { xCor, yCor };
-    //     } else return this.play();
-    // }
-
+    listener(shipHit, isSunk) {
+        if (shipHit || this.isAfloat) {
+            if (this.initialHit == null) this.initialHit = this.currentShot;
+            // only turns afloat m followUpHit on first hit
+            this.isAfloat = true;
+            this.followUpHit = true;
+            if (!shipHit) {
+                // restore to initial point
+                this.currentShot = this.initialHit;
+                // change orientation to opposite e.g left - right
+                this.shipHit = null;
+                this.dir = this.orientation(this.dir);
+                if (this.dir) this.shotDirection.push(this.dir);
+                console.log('pushed  here');
+                console.log(this.currentShot);
+            } else this.shipHit = true;
+            if (isSunk) {
+                console.log(isSunk);
+                this.resetTracking();
+            }
+            // this.isHit();
+        }
+    }
     nextShot() {
-        this.currentShot = this.validShots.pop();
-        this.firedShots.add(`${this.currentShot[0]}:${this.currentShot[1]}`);
+        if (this.followUpHit) {
+            // activates for second hit
+            // 3rd now
+            console.log('listener Active');
+            console.log(this.shotDirection);
+            const nextShot = this.isHit();
+            console.log(this.shotDirection);
+            if (nextShot) {
+                this.firedShots.add(`${nextShot.xCor}:${nextShot.yCor}`);
+                this.currentShot = nextShot;
+                return nextShot;
+            }
+        }
+
+        this.resetTracking()
+        if (this.validShots) this.currentShot = this.validShots.pop();
+        this.firedShots.add(
+            `${this.currentShot.xCor}:${this.currentShot.yCor}`,
+        );
         console.log(this.firedShots);
         return this.currentShot;
     }
 
-    isHit(hit) {
-        if (!hit) return;
-
-        this.hitCor = this.currentShot;
-        const { xCor, yCor } = this.hitCor;
+    isHit() {
+        // for second shot
+        // cuz missed current == initial
+        const { xCor, yCor } = this.currentShot;
 
         const moves = {
-            right: [xCor, yCor + 1],
-            left: [xCor, yCor - 1],
-            top: [xCor + 1, yCor],
-            bottom: [xCor - 1, yCor],
+            left: [0, -1],
+            right: [0, 1],
+            top: [-1, 0],
+            bottom: [1, 0],
         };
-        for (m of moves) {
-            if (this.positionChecker(m[0], m[1])) {
-                let nextShot = { xCor: m[0], yCor: m[1] } 
-                console.log(nextShot);
-                this.validShots = this.validShots.filter(obj => !(obj.xCor === nextShot.xCor && obj.yCor === nextShot.yCor))
-                return nextShot;
+
+        const shuffledMove = this.utils.shuffle(Object.entries(moves))
+        // if dir causes hit save and continue the direction
+        console.log(this.dir);
+        if (this.dir) {
+            const [x, y] = moves[this.dir];
+            const newX = xCor + x;
+            const newY = yCor + y;
+            const nextShot = this.positionChecker(newX, newY);
+
+            console.log(nextShot);
+
+            // console.log('continue direction');
+
+            if (!nextShot && this.shipHit) {
+                this.currentShot = this.initialHit;
+                this.dir = this.orientation(this.dir);
+                this.shotDirection.push(this.dir);
+                console.log(`changing orientation to ${this.dir}`);
+                return this.isHit();
+            }
+
+            if (nextShot) return nextShot;
+        }
+
+        // check each dir
+        if (this.shotDirection.length === 4) {
+            this.resetTracking();
+            return null
+        }
+        for (const [direction, [x, y]] of shuffledMove) {
+            if (!this.shotDirection.includes(direction)) {
+                const newX = xCor + x;
+                const newY = yCor + y;
+                this.dir = direction;
+                this.shotDirection.push(direction);
+                const nextShot = this.positionChecker(newX, newY);
+                console.log(this.dir);
+
+                if (nextShot) return nextShot;
             }
         }
-        // else if (this.positionChecker(xCor))
 
         // right
         // top
         // bottom
+        this.resetTracking();
+        return null;
     }
     positionChecker(xCor, yCor) {
         if (
@@ -66,6 +137,37 @@ export class botPlay {
         )
             return false;
 
-        return true;
+        let nextShot = { xCor, yCor };
+        this.validShots = this.validShots.filter(
+            (obj) =>
+                !(obj.xCor === nextShot.xCor && obj.yCor === nextShot.yCor),
+        );
+        return nextShot;
+    }
+
+    orientation(dir) {
+        const opposites = {
+            right: 'left',
+            left: 'right',
+            top: 'bottom',
+            bottom: 'top',
+        };
+
+        const nextDir = opposites[dir];
+        if (nextDir && !this.shotDirection.includes(nextDir)) {
+            return nextDir;
+        }
+
+        return null;
+    }
+
+    resetTracking() {
+        this.isAfloat = null;
+        this.followUpHit = null;
+        this.initialHit = null;
+        this.currentShot = null;
+        this.dir = null;
+        this.shipHit = null;
+        this.shotDirection = [];
     }
 }

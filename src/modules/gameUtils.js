@@ -68,7 +68,10 @@ export function gameUtils() {
         const validShots = [];
         for (let i = 0; i < arr1.length; i++) {
             for (let v = 0; v < arr2.length; v++) {
-                validShots.push({ xCor: arr1[i], yCor: arr2[v] });
+                const x = arr1[i]
+                const y= arr2[v]
+               if ((x + y) % 2 === 0)
+                validShots.push({ xCor: x, yCor: y });
             }
         }
         return shuffle(validShots);
@@ -85,6 +88,7 @@ export function gameUtils() {
     }
     return {
         possibleShots,
+        shuffle,
         generateRandInt,
         generateShipCor,
         clearShipPos: () => shipPos.clear(),

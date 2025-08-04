@@ -29,7 +29,7 @@ main{
   position: relative;
 }
 
-.board-wrapper{
+.board-container{
   display: flex;
   gap: 1rem;
   /* width: 80%; */
@@ -39,14 +39,14 @@ main{
   position: relative;
   border: 1px;
 }
-.board-one,.board-two,.player__settings{
+.board,.board__player_settings{
   display: flex;
   flex-wrap: wrap;
   width: calc(var(--size) * 10 + 2px) ;
   border: 1px solid black;
 }
 
-.player__settings{
+.board__player_settings{
   width: calc(var(--size) * 10 + 4px) ;
   
   /* border: none; */
@@ -67,7 +67,7 @@ main{
 .ship-holder .cor:not(:has(.ship)){
   background-color: lightblue;
 }
-.board-one,.board-two{
+.board{
   max-width: fit-content;
 
 }

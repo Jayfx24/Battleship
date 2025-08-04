@@ -160,23 +160,16 @@ export class createGame {
         let isSunk,
             shipHit = null;
         this.sendShot(xCor, yCor);
+        this.gameTurn();
         // if (ship) {
         //     console.log(`${ship.name}: ${ship.isSunk() ? 'sunk' : 'Not Sunk'}`);
         // }
-        if (this.vsBot &&
+        if (
+            this.vsBot &&
             this.gameStarted &&
-            this.currentPlayer === this.playerOne) {
-            
-            // let   eShip = this.currentPlayer.gameBoard.getBoard()[xCor][yCor];
-            //  //  need a function that send cor and listen to changes
-            // if (eShip) {
-            //     isSunk = eShip.isSunk?.() ?? null;
-            //     shipHit = eShip.getHits() > 0 ? true : false;
-            //     console.log(typeof eShip)
-            //     console.log(isSunk)
-            //     console.log(shipHit)
-            // }
-            this.botTurn(shipHit, isSunk);
+            this.currentPlayer === this.playerOne
+        ) {
+            this.botTurn();
         }
     }
 
@@ -262,10 +255,7 @@ export class createGame {
         //     'mousedown',
         //     this.boundOnBoard,
         // );
-        this.activePlacementBoard.addEventListener(
-            'click',
-            this.boundRotate,
-        );
+        this.activePlacementBoard.addEventListener('click', this.boundRotate);
     }
 
     mouseDown(e) {
@@ -575,17 +565,29 @@ export class createGame {
             receivingPlayer.receiveAttack(xCor, yCor);
 
             this.resetBoardUI();
-            this.gameTurn();
         }
         // Else show you cant;t hit the same spot twice
     }
 
-    botTurn(shipHit, isSunk) {
+    botTurn() {
         if (this.currentPlayer !== this.playerOne) return;
+        const { xCor, yCor } = this.botPlay.nextShot();
+        const receivingPlayer =
+            this.currentPlayer.gameBoard.getBoard()[xCor][yCor];
+        let ship = receivingPlayer;
 
-        if (isSunk) this.botPlay.isAfloat = null;
-        const { xCor, yCor } = this.botPlay.nextShot(shipHit, isSunk);
+        const invalid = ['', 0, 'X'];
         this.sendShot(xCor, yCor);
+        let isSunk,
+            shipHit = null;
+
+        if (!invalid.includes(ship)) {
+            shipHit = true;
+            isSunk = ship.isSunk();
+        }
+        console.log(shipHit);
+        this.botPlay.listener(shipHit, isSunk);
+        this.gameTurn();
     }
 }
 // add orientation to ship
