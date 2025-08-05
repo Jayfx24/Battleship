@@ -8,6 +8,7 @@ import {
     confirmPlacement,
     resetPlacementBoard,
     afterPlacement,
+    initiatePassing,
 } from './domController.js';
 import { gameUtils } from '../modules/gameUtils.js';
 import { botPlay } from '../modules/botLogic.js';
@@ -17,8 +18,8 @@ export class createGame {
         this.utils = gameUtils();
         this.playerOne = new Player('Player One', gameBoard());
         this.playerTwo = new Player('Player Two', gameBoard());
-        this.currentPlayer = this.playerOne;
-        this.activeBoard = domController.boardTwo;
+        this.receivingPlayer = this.playerOne;
+        this.receivingBoard = domController.boardTwo;
         this.currentPlayerPlacement = this.playerOne;
         this.activePlacementBoard = domController.boardOne;
         this.startX =
@@ -31,8 +32,8 @@ export class createGame {
             this.gameStarted =
                 false;
         this.currentDraggable = null;
-        this.bondMouseMove = this.mouseMove.bind(this);
-        this.bondMouseUp = this.mouseUp.bind(this);
+        this.boundMouseMove = this.mouseMove.bind(this);
+        this.boundMouseUp = this.mouseUp.bind(this);
         this.boundRotate = this.rotateShip.bind(this);
         this.boundOnBoard = this.dragOnBoard.bind(this);
         this.dragStartLoc = null;
@@ -59,7 +60,7 @@ export class createGame {
     createPlayers() {
         // const playerOneBoard = gameBoard();
         // const playerTwoBoard = gameBoard();
-        // domController.playerOneInfo.textContent = this.playerOne.playerName;
+        // domController.playerOneInfo.textContent = this.playerOne.name;
     }
 
     createBoardUI(board, parent) {
@@ -143,7 +144,7 @@ export class createGame {
 
     #handleBoxClick(e) {
         console.log(
-            `player:${this.currentPlayer.playerName} turn to shoot board: ${this.activeBoard.className}`,
+            `player:${this.receivingPlayer.name} turn to shoot board: ${this.receivingBoard.className}`,
         );
 
         const target = e.target;
@@ -151,12 +152,12 @@ export class createGame {
         if (!cor) return;
         if (cor.querySelector('.missed') || cor.querySelector('.ship-hit'))
             return;
-        if (!this.activeBoard.contains(cor)) return;
+        if (!this.receivingBoard.contains(cor)) return;
 
         // send Cor
         const xCor = target.dataset.xCor;
         const yCor = target.dataset.yCor;
-        let ship = this.currentPlayer.gameBoard.getBoard()[xCor][yCor];
+        let ship = this.receivingPlayer.gameBoard.getBoard()[xCor][yCor];
         let isSunk,
             shipHit = null;
         this.sendShot(xCor, yCor);
@@ -167,21 +168,22 @@ export class createGame {
         if (
             this.vsBot &&
             this.gameStarted &&
-            this.currentPlayer === this.playerOne
+            this.receivingPlayer === this.playerOne
         ) {
             this.botTurn();
         }
     }
 
     gameTurn() {
-        this.currentPlayer =
-            this.currentPlayer === this.playerOne
+        this.receivingPlayer =
+            this.receivingPlayer === this.playerOne
                 ? this.playerTwo
                 : this.playerOne;
-        this.activeBoard =
-            this.currentPlayer === this.playerOne
+        this.receivingBoard =
+            this.receivingPlayer === this.playerOne
                 ? domController.boardOne
                 : domController.boardTwo;
+        console.log('ere');
     }
 
     #confirmShipsStatus(gameBoard) {
@@ -192,6 +194,7 @@ export class createGame {
     resetBoardUI() {
         domController.boardOne.innerHTML = '';
         domController.boardTwo.innerHTML = '';
+        // initiatePassing() // temp for testing
 
         this.createBoardUI(
             this.playerOne.gameBoard.getBoard(),
@@ -202,11 +205,12 @@ export class createGame {
             domController.boardTwo,
         );
 
-        // if (this.vsBot) {
-        //     domController.boardTwoWrapper
-        //         .querySelectorAll('.ship')
-        //         .forEach((el) => el.classList.add('hide'));
-        // }
+        if (this.vsBot) {
+            domController.boardTwoWrapper
+                .querySelectorAll('.ship')
+                .forEach((el) => el.classList.add('hide'));
+        }
+         confirmPlacement(false); //for testing
     }
 
     shipStorage() {
@@ -255,7 +259,9 @@ export class createGame {
         //     'mousedown',
         //     this.boundOnBoard,
         // );
-        this.activePlacementBoard.addEventListener('click', this.boundRotate);
+        domController.boardWrappers.forEach((el) =>
+            el.addEventListener('click', this.boundRotate),
+        );
     }
 
     mouseDown(e) {
@@ -281,12 +287,12 @@ export class createGame {
 
         domController.boardContainer.addEventListener(
             'mousemove',
-            this.bondMouseMove,
+            this.boundMouseMove,
         );
 
         domController.boardContainer.addEventListener(
             'mouseup',
-            this.bondMouseUp,
+            this.boundMouseUp,
         );
     }
 
@@ -307,14 +313,14 @@ export class createGame {
         e.preventDefault();
 
         this.currentDraggable.style.cursor = 'move';
-        domController.boardWrapper.removeEventListener(
-            'mousemove',
-            this.bondMouseMove,
-        );
-        domController.boardWrapper.removeEventListener(
-            'mouseup',
-            this.bondMouseUp,
-        );
+        // domController.boardWrapper.removeEventListener(
+        //     'mousemove',
+        //     this.boundMouseMove,
+        // );
+        // domController.boardWrapper.removeEventListener(
+        //     'mouseup',
+        //     this.boundMouseUp,
+        // );
         this.dragTarget(e);
 
         this.currentDraggable = null;
@@ -387,6 +393,7 @@ export class createGame {
         let firstPlayer = false;
 
         let clickProcess = null;
+        let initiateAuthorization = null;
         if (playerBoard.findAllShips().size === 5) {
             if (this.vsBot) {
                 confirmPlacement(firstPlayer);
@@ -398,7 +405,8 @@ export class createGame {
                     firstPlayer = true;
 
                     confirmPlacement(firstPlayer);
-                    clickProcess = () => this.#handleConfirm();
+                    clickProcess = () => initiatePassing();
+                    initiateAuthorization = () => this.#handleConfirm();
                 } else {
                     confirmPlacement(firstPlayer);
 
@@ -410,11 +418,16 @@ export class createGame {
                 'click',
                 clickProcess,
             );
+            component.authorization.btn.addEventListener(
+                'click',
+                initiateAuthorization,
+            );
         }
     }
     #handleConfirm() {
         resetPlacementBoard();
-
+        component.authorization.article.style.visibility = 'hidden';
+        console.log(component.authorization.article);
         this.currentPlayerPlacement = this.playerTwo;
         this.activePlacementBoard = domController.boardTwo;
 
@@ -424,14 +437,14 @@ export class createGame {
         domController.randomizeBtns.forEach((el) => el.parentNode.remove());
         // this.currentPlayerPlacement = this.playerTwo
         afterPlacement();
-        this.gameTurn();
+        this.resetBoardUI();
+
         this.gameStarted = true;
 
-        this.activePlacementBoard.removeEventListener(
-            'click',
-            this.boundRotate,
+        domController.boardWrappers.forEach((el) =>
+            el.removeEventListener('click', this.boundRotate),
         );
-        this.activePlacementBoard.removeEventListener(
+        domController.boardContainer.removeEventListener(
             'mousedown',
             this.boundOnBoard,
         );
@@ -443,29 +456,33 @@ export class createGame {
             );
             // this.randomLogic()
         } else {
-            domController.boardWrapper.addEventListener(
+            domController.boardContainer.addEventListener(
                 'click',
                 this.#handleBoxClick.bind(this),
             );
         }
 
-        this.resetBoardUI();
+        this.gameTurn();
     }
     setPlayerPref(e) {
         e.preventDefault();
         const formData = new FormData(component.form);
         const data = Object.fromEntries(formData.entries());
         const { playerChoice, playerOneName, playerTwoName } = data;
+        const pOne = playerOneName ? playerOneName : 'Player One';
+        let pTwo = playerTwoName ? playerTwoName : 'Player Two';
         if (playerChoice === 'vsBot') {
             this.vsBot = true;
             this.botPlay = new botPlay();
+            pTwo = 'AI';
+
             // this.botPlay.aiShots()
         }
 
-        if (playerOneName) {
-            domController.playerOneInfo.textContent = playerOneName;
-        }
-        // playerTwo.type === 'real' ? playerTwo.playerName || 'Player Two' : 'AI';
+        domController.playerOne.name.textContent = pOne;
+        domController.playerTwo.name.textContent = pTwo;
+
+        // playerTwo.type === 'real' ? playerTwo.name || 'Player Two' : 'AI';
 
         this.shipStorage();
         this.randomLogic();
@@ -552,14 +569,14 @@ export class createGame {
             this.#handlePlacement(this.currentPlayerPlacement.gameBoard);
         };
         domController.randomizeBtns.forEach((el) => {
-            el.parentNode.classList.remove('hide');
+            el.parentNode.classList.remove('no-visibility');
             el.addEventListener('click', rand);
         });
     }
 
     sendShot(xCor, yCor) {
         const hitLoc = { xCor, yCor };
-        const receivingPlayer = this.currentPlayer.gameBoard;
+        const receivingPlayer = this.receivingPlayer.gameBoard;
         const isValidShot = receivingPlayer.hitSpots();
         if (!isValidShot.has(hitLoc)) {
             receivingPlayer.receiveAttack(xCor, yCor);
@@ -570,10 +587,10 @@ export class createGame {
     }
 
     botTurn() {
-        if (this.currentPlayer !== this.playerOne) return;
+        if (this.receivingPlayer !== this.playerOne) return;
         const { xCor, yCor } = this.botPlay.nextShot();
         const receivingPlayer =
-            this.currentPlayer.gameBoard.getBoard()[xCor][yCor];
+            this.receivingPlayer.gameBoard.getBoard()[xCor][yCor];
         let ship = receivingPlayer;
 
         const invalid = ['', 0, 'X'];

@@ -1,7 +1,7 @@
 // generate random coordinates
 
 export function gameUtils() {
-    const newPos = possibleShots();
+    const shipCoord = possibleShots()
     let max = 10;
     let min = 0;
     let shipPos = new Set();
@@ -13,7 +13,7 @@ export function gameUtils() {
         if (position == null || position === '')
             throw new Error('Orientation/direction not added');
 
-        // const cor = newPos.pop();
+        
         const xCor = generateRandInt();
         const yCor = generateRandInt();
 
@@ -24,21 +24,10 @@ export function gameUtils() {
         if (mainAxis + length - 1 >= max)
             return generateShipCor(length, position);
 
-        // add ship occupied spots to shipPos
         if (!isEmpty(shipPos, xCor, yCor, length, position)) {
-            // newPos.unshift(cor)
             return generateShipCor(length, position);
         }
-        // for (let i = 0; i < length; i++) {
-        //     const x = position === 'vertical' ? xCor : xCor + i;
-        //     const y = position === 'vertical' ? yCor + i : yCor;
-        //     let OccupiedSpot = `${x},${y}`;
-        //     if (shipPos.has(OccupiedSpot)) {
-        //         return generateShipCor(length, position);
-        //     }
-        //     shipPos.add(OccupiedSpot);
-        // }
-
+        
         return { xCor, yCor };
     }
 
@@ -63,8 +52,8 @@ export function gameUtils() {
     }
 
     function possibleShots() {
-        const arr1 = Array.from({ length: 10 }, (v, i) => i);
-        const arr2 = Array.from({ length: 10 }, (v, i) => i);
+        const arr1 = Array.from({ length: 10 }, (_, i) => i);
+        const arr2 = Array.from({ length: 10 }, (_, i) => i);
         const validShots = [];
         for (let i = 0; i < arr1.length; i++) {
             for (let v = 0; v < arr2.length; v++) {

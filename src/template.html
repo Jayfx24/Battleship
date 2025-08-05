@@ -9,20 +9,29 @@
         <header></header>
         <main>
             <section class="wrapper">
+                <div class="borad__notifier"></div>
                 <div class="board-container">
                     <div class="board__wrapper board__wrapper--one">
-                        <span class="board__player-info board__player-info--one"></span>
+                        <div class="board__player-info board__player-info--one">
+                            <span class="player-info__name player-info__name--one"></span>
+                        </div>
                         <div class=" board board--one"></div>
-                        <span class="board__controls hide"> <button class="board__button board__button--randomize">randomize</button></span>
+                        <div class="board__controls  no-visibility"> <button class="board__button board__button--randomize ">randomize</button> <button class="board__button board__button--reset" >Reset</button>
+                    </div>
                     </div>
                     <div class="board__wrapper board__wrapper--two">
-                        <span class="board__player-info board__player-info--two"></span>
+                        <div class="board__player-info board__player-info--two">
+                            <span class="player-info__name player-info__name--two"></span>
+
+                        </div>
                         <div class="board board--two"></div>
-                        <span class="board__controls hide"> <button class="board__button board__button--randomize">randomize</button></span>
+                        <div class="board__controls no-visibility"> <button class="board__button board__button--randomize ">randomize</button> <button class="board__button board__button--reset ">Reset</button>
+                    </div>
                     </div>
                 </div>
             </section>
         </main>
         <footer></footer>
+        
     </body>
 </html>
