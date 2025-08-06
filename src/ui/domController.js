@@ -19,6 +19,7 @@ export const domController = {
     },
     playerTwoInfo: document.querySelector('.board__player-info--two'),
     randomizeBtns: document.querySelectorAll('.board__button--randomize'),
+    resetBtns: document.querySelectorAll('.board__button--reset'),
 
     // cors : document.querySelectorAll('.cor')
 };
@@ -63,7 +64,7 @@ export function createForm() {
                             checked
 
                         />
-                        <label for="singlePlayer">Single Player</label
+                        <label for="singlePlayer">Two Players </label
                         >
                      </div>
                    
@@ -77,7 +78,7 @@ export function createForm() {
                             class= "radio"                
                            
                         />
-                        <label for="twoPlayer">Two Players</label
+                        <label for="twoPlayer">Single Player</label
                         >
                    
                     </div>
@@ -117,10 +118,11 @@ export function confirmPlacement(playerOne) {
     const btn = component.confirmPlacement.confirmBtn;
     text.textContent =
         'Admiral, Confirm if you are pleased with the placement of the battle group';
-    const btnTxt = playerOne ? 'Pass the device to Player 2' : 'Start Game';
-
+    const btnTxt = playerOne ? 'Pass device to Player 2' : 'Start Game';
+    
     btn.textContent = btnTxt;
-
+    btn.style.color = playerOne ? 'darkblue' : 'green'
+    btn.style.backgroundColor = playerOne ? 'blue' : null
     component.confirmPlacement.parent.appendChild(text);
     component.confirmPlacement.parent.appendChild(btn);
     component.playerSetts.appendChild(component.confirmPlacement.parent);
@@ -139,7 +141,7 @@ export function afterPlacement() {
     domController.boardOneWrapper.style.display = '';
 }
 
-export function initiatePassing(playerName, title, body, button) {
+export function initiatePassing(title, body, btnTxt) {
     const passInfo = component.authorization;
     const article = passInfo.article;
 
@@ -151,9 +153,9 @@ export function initiatePassing(playerName, title, body, button) {
     passInfo.topSecretImg.classList.add('secrets__img');
     passInfo.topSecretImg.src = topSecretImg;
     //  console.log('../assets')
-    passInfo.title.textContent = `Authorization needed`;
-    passInfo.body.innerHTML = `<p>Admiral Player,<p class= 'body-text'>Please authorize placement of carrier group`;
-    passInfo.btn.textContent = 'Authorize';
+    passInfo.title.textContent = title;
+    passInfo.body.innerHTML = body;
+    passInfo.btn.textContent = btnTxt;
 
     passInfo.topSecret.appendChild(passInfo.topSecretImg);
     article.appendChild(passInfo.title);
@@ -164,29 +166,29 @@ export function initiatePassing(playerName, title, body, button) {
     domController.boardContainer.appendChild(article);
 }
 
-const messages = {
+export const messages = {
     confirmPlacement: {
-        title: () => `ATTENTION NEEDED!!!`,
-        body: (playerName) =>
-            `Admiral ${playerName}  Confirm if you are pleased with the placement of the battle group'`,
-        btn: () => `Pass the device to Player 2`,
+        title: `ATTENTION NEEDED!!!`,
+        body: (name) =>
+            `Admiral ${name}  Confirm if you are pleased with the placement of the battle group'`,
+        btn: `Pass the device to Player 2`,
     },
     start: {
-        title: () => `ATTENTION NEEDED!!!`,
-        body: (playerName) =>
-            `Admiral ${playerName}  Confirm if you are pleased with the placement of the battle group'`,
-        btn: () => `Start Game `,
+        title: `ATTENTION NEEDED!!!`,
+        body: (name) =>
+            `Admiral ${name}  Confirm if you are pleased with the placement of the battle group'`,
+        btn: `Start Game `,
     },
 
     nextPlacement: {
-        title: () => `Authorization needed`,
-        body: (playerName) => ` <p>Admiral Player,<p class= 'body-text'>Please authorize placement of carrier group`,
-        btn: () => `Authorize`,
+        title: `Authorization needed`,
+        body: (name) => ` <p>Admiral ${name},<p class= 'body-text'>Please authorize placement of carrier group`,
+        btn: `Authorize`,
     },
      NextTurn: {
-        title: () => `Authorization needed`,
-        body: (playerName) => ` <p>Admiral ${playerName},<p class= 'body-text'>Please authorize next Shot location`,
-        btn: () => `Authorize Shot`,
+        title: `Authorization needed`,
+        body: (name) => ` <p>Admiral ${name},<p class= 'body-text'>Please authorize next Shot location`,
+        btn: `Authorize Shot`,
     },
     
 };

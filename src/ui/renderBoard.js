@@ -9,6 +9,7 @@ import {
     resetPlacementBoard,
     afterPlacement,
     initiatePassing,
+    messages,
 } from './domController.js';
 import { gameUtils } from '../modules/gameUtils.js';
 import { botPlay } from '../modules/botLogic.js';
@@ -21,6 +22,7 @@ export class createGame {
         this.receivingPlayer = this.playerOne;
         this.receivingBoard = domController.boardTwo;
         this.currentPlayerPlacement = this.playerOne;
+        this.currentPlayer = this.playerOne;
         this.activePlacementBoard = domController.boardOne;
         this.startX =
             this.startY =
@@ -41,6 +43,7 @@ export class createGame {
         this.rect = null;
         this.parentRect = null;
         this.vsBot = null;
+
         // this.iRotate = false
     }
 
@@ -108,6 +111,12 @@ export class createGame {
             PatrolBoat: 3,
         };
     }
+    resetShipPlacement(player){
+          const ships = this.#shipsInfo();
+          Object.entries(ships).forEach((key) => {
+                player.gameBoard.removeShip(key[0]);
+            });
+    }
     placeShip(player, status = 'random') {
         // needs refactoring
         const ships = this.#shipsInfo();
@@ -120,10 +129,7 @@ export class createGame {
         };
 
         if (status === 'random') {
-            Object.entries(ships).forEach((key) => {
-                player.gameBoard.removeShip(key[0]);
-            });
-
+            this.resetShipPlacement(player)
             Object.entries(ships).forEach(([key, value]) => {
                 const isHorizontal = Math.random() < 0.5 ? true : false;
 
@@ -186,6 +192,13 @@ export class createGame {
         console.log('ere');
     }
 
+    playerTurn() {
+        this.currentPlayer =
+            this.receivingPlayer === this.playerOne
+                ? this.playerTwo
+                : this.playerOne;
+    }
+
     #confirmShipsStatus(gameBoard) {
         if (gameBoard.isAllShipSunk()) {
         }
@@ -194,7 +207,10 @@ export class createGame {
     resetBoardUI() {
         domController.boardOne.innerHTML = '';
         domController.boardTwo.innerHTML = '';
-        // initiatePassing() // temp for testing
+
+        // test
+
+        // initiatePassing(msg.title,msg.body(this.currentPlayer.name),msg.btn) // temp for testing
 
         this.createBoardUI(
             this.playerOne.gameBoard.getBoard(),
@@ -210,11 +226,12 @@ export class createGame {
                 .querySelectorAll('.ship')
                 .forEach((el) => el.classList.add('hide'));
         }
-         confirmPlacement(false); //for testing
+        //  confirmPlacement(false); //for testing
     }
 
     shipStorage() {
         component.playerSetts.innerHTML = '';
+        component.placeHolder.innerHTML = '';
         component.placeHolder.classList.add('ship-holder');
 
         const ships = this.#shipsInfo();
@@ -225,7 +242,7 @@ export class createGame {
             Submarine: { xCor: 3, yCor: 0 },
             PatrolBoat: { xCor: 4, yCor: 0 },
         };
-        let count = 0;
+        
         Object.entries(ships).forEach(([key, value]) => {
             if (!(key in defaultShipsLoc)) return;
             else if (defaultShipsLoc[key]) {
@@ -267,12 +284,6 @@ export class createGame {
     mouseDown(e) {
         e.preventDefault();
 
-        // this.rect = this.currentDraggable.getBoundingClientRect();
-        // this.parentRect = component.placeHolder.getBoundingClientRect();
-        // this.dragStartLoc = [
-        //     this.rect.left - this.parentRect.left,
-        //     this.rect.top - this.parentRect.top,
-        // ];
         const target = e.target.closest('.ship-layer');
         if (!target) return;
         this.currentDraggable = target;
@@ -313,14 +324,6 @@ export class createGame {
         e.preventDefault();
 
         this.currentDraggable.style.cursor = 'move';
-        // domController.boardWrapper.removeEventListener(
-        //     'mousemove',
-        //     this.boundMouseMove,
-        // );
-        // domController.boardWrapper.removeEventListener(
-        //     'mouseup',
-        //     this.boundMouseUp,
-        // );
         this.dragTarget(e);
 
         this.currentDraggable = null;
@@ -403,9 +406,17 @@ export class createGame {
             } else {
                 if (this.currentPlayerPlacement === this.playerOne) {
                     firstPlayer = true;
-
+                    const msg = messages.nextPlacement;
                     confirmPlacement(firstPlayer);
-                    clickProcess = () => initiatePassing();
+
+                    clickProcess = () => {
+                        this.playerTurn();
+                        initiatePassing(
+                            msg.title,
+                            msg.body(this.currentPlayer.name),
+                            msg.btn,
+                        );
+                    };
                     initiateAuthorization = () => this.#handleConfirm();
                 } else {
                     confirmPlacement(firstPlayer);
@@ -454,7 +465,7 @@ export class createGame {
                 'click',
                 this.#handleBoxClick.bind(this),
             );
-            // this.randomLogic()
+            // this.boardControls()
         } else {
             domController.boardContainer.addEventListener(
                 'click',
@@ -475,17 +486,18 @@ export class createGame {
             this.vsBot = true;
             this.botPlay = new botPlay();
             pTwo = 'AI';
+            this.playerTwo.type = "AI"
 
             // this.botPlay.aiShots()
         }
 
-        domController.playerOne.name.textContent = pOne;
-        domController.playerTwo.name.textContent = pTwo;
-
+        this.playerOne.name = domController.playerOne.name.textContent = pOne;
+        this.playerTwo.name = domController.playerTwo.name.textContent = pTwo;
+        console.log(this.playerTwo.name);
         // playerTwo.type === 'real' ? playerTwo.name || 'Player Two' : 'AI';
 
         this.shipStorage();
-        this.randomLogic();
+        this.boardControls();
         component.form.reset();
     }
 
@@ -561,16 +573,29 @@ export class createGame {
         }
     }
 
-    randomLogic() {
+    boardControls() {
         // change func name
         const rand = () => {
             this.placeShip(this.currentPlayerPlacement);
             component.playerSetts.innerHTML = '';
             this.#handlePlacement(this.currentPlayerPlacement.gameBoard);
         };
+        const clearBoard = () => {
+            // clear current board
+          this.resetShipPlacement(this.currentPlayerPlacement)
+          this.resetBoardUI()
+           // render ship storage
+           this.shipStorage()
+        }
+
+        
         domController.randomizeBtns.forEach((el) => {
             el.parentNode.classList.remove('no-visibility');
             el.addEventListener('click', rand);
+        });
+
+        domController.resetBtns.forEach((el) => {
+            el.addEventListener('click', clearBoard);
         });
     }
 
@@ -606,5 +631,7 @@ export class createGame {
         this.botPlay.listener(shipHit, isSunk);
         this.gameTurn();
     }
+
+    
 }
 // add orientation to ship
