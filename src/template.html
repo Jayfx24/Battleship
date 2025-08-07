@@ -9,29 +9,78 @@
         <header></header>
         <main>
             <section class="wrapper">
-                <div class="borad__notifier"></div>
+                <div class="board__notifier">
+                    <div class="analytics no-visibility">
+                        <div class="analytics__update">
+                            <div class="analytics__texts">
+                                <span>Analytics</span>
+                                <p class="analytics__category">Ship Health</p>
+                            </div>
+                            <div class="live-update"></div>
+                        </div>
+                        <div class="analytics__ships">
+                            <div
+                                class="analytics__ships__info analytics__ships__info--one"
+                            >
+                                <p
+                                    class="current-player current-player--one"
+                                ></p>
+                                <div class="analytics__ships__one"></div>
+                            </div>
+                            <div
+                                class="analytics__ships__info analytics__ships__info--two"
+                            >
+                                <p
+                                    class="current-player current-player--two"
+                                ></p>
+                                <div class="analytics__ships__two"></div>
+                            </div>
+                        </div>
+                        <div class="current-status"></div>
+                    </div>
+                </div>
                 <div class="board-container">
                     <div class="board__wrapper board__wrapper--one">
                         <div class="board__player-info board__player-info--one">
-                            <span class="player-info__name player-info__name--one"></span>
+                            <span
+                                class="player-info__name player-info__name--one"
+                            ></span>
                         </div>
-                        <div class=" board board--one"></div>
-                        <div class="board__controls  no-visibility"> <button class="board__button board__button--randomize ">randomize</button> <button class="board__button board__button--reset" >Reset</button>
-                    </div>
+                        <div class="board board--one"></div>
+                        <div class="board__controls no-visibility">
+                            <button
+                                class="board__button board__button--randomize"
+                            >
+                                randomize
+                            </button>
+                            <button class="board__button board__button--reset">
+                                Reset
+                            </button>
+                        </div>
+                        <button class="board-pass board-pass--one hide"></button>
                     </div>
                     <div class="board__wrapper board__wrapper--two">
                         <div class="board__player-info board__player-info--two">
-                            <span class="player-info__name player-info__name--two"></span>
-
+                            <span
+                                class="player-info__name player-info__name--two"
+                            ></span>
                         </div>
                         <div class="board board--two"></div>
-                        <div class="board__controls no-visibility"> <button class="board__button board__button--randomize ">randomize</button> <button class="board__button board__button--reset ">Reset</button>
-                    </div>
+                        <div class="board__controls no-visibility">
+                            <button
+                                class="board__button board__button--randomize"
+                            >
+                                randomize
+                            </button>
+                            <button class="board__button board__button--reset">
+                                Reset
+                            </button>
+                        </div>
+                        <button class="board-pass board-pass--two hide"></button>
                     </div>
                 </div>
             </section>
         </main>
         <footer></footer>
-        
     </body>
 </html>

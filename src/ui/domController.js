@@ -3,7 +3,8 @@ import topSecretImg from '../assets/images/top-secret.svg';
 export const domController = {
     wrapper: document.querySelector('.wrapper'),
     boardContainer: document.querySelector('.board-container'),
-    boardWrapper: document.querySelector('.board__wrapper'),
+    // boardWrapperOne: document.querySelector('.board__wrapper--one'),
+    // boardWrapperTwo: document.querySelector('.board__wrapper--two'),
     boardWrappers: document.querySelectorAll('.board__wrapper'),
     boardOne: document.querySelector('.board--one'),
     boardTwo: document.querySelector('.board--two'),
@@ -20,6 +21,22 @@ export const domController = {
     playerTwoInfo: document.querySelector('.board__player-info--two'),
     randomizeBtns: document.querySelectorAll('.board__button--randomize'),
     resetBtns: document.querySelectorAll('.board__button--reset'),
+    analytics: {
+        parent: document.querySelector('.analytics'),
+        ships: document.querySelector('.analytics__ships'),
+        one: document.querySelector('.analytics__ships__one'),
+        two: document.querySelector('.analytics__ships__two'),
+        infoOne: document.querySelector('.analytics__ships__info--one'),
+        infoTwo: document.querySelector('.analytics__ships__info--two'),
+        currentPlayerOne: document.querySelector('.current-player--one'),
+        currentPlayerTwo: document.querySelector('.current-player--two'),
+        liveUpdate: document.querySelector('.live-update'),
+    },
+    boardPass: {
+        all: document.querySelector('.board-pass'),
+        one: document.querySelector('.board-pass--one'),
+        two: document.querySelector('.board-pass--two'),
+    },
 
     // cors : document.querySelectorAll('.cor')
 };
@@ -119,10 +136,10 @@ export function confirmPlacement(playerOne) {
     text.textContent =
         'Admiral, Confirm if you are pleased with the placement of the battle group';
     const btnTxt = playerOne ? 'Pass device to Player 2' : 'Start Game';
-    
+
     btn.textContent = btnTxt;
-    btn.style.color = playerOne ? 'darkblue' : 'green'
-    btn.style.backgroundColor = playerOne ? 'blue' : null
+    btn.style.color = playerOne ? 'darkblue' : 'green';
+    btn.style.backgroundColor = playerOne ? 'blue' : null;
     component.confirmPlacement.parent.appendChild(text);
     component.confirmPlacement.parent.appendChild(btn);
     component.playerSetts.appendChild(component.confirmPlacement.parent);
@@ -131,7 +148,7 @@ export function confirmPlacement(playerOne) {
 export function resetPlacementBoard() {
     domController.boardOneWrapper.style.display = 'none';
     domController.boardTwoWrapper.style.display = '';
-    domController.boardTwoWrapper.style.order = 2;
+    // domController.boardTwoWrapper.style.order = 2;
     component.placeHolder.innerHTML = '';
     component.playerSetts.innerHTML = '';
 }
@@ -139,11 +156,14 @@ export function resetPlacementBoard() {
 export function afterPlacement() {
     component.playerSetts.style.display = 'none';
     domController.boardOneWrapper.style.display = '';
+    domController.analytics.currentPlayerOne.textContent = 'Your Ship';
+    domController.analytics.currentPlayerTwo.textContent = 'Enemies Ship';
 }
 
 export function initiatePassing(title, body, btnTxt) {
     const passInfo = component.authorization;
     const article = passInfo.article;
+    // article.innerHTML = '';
 
     article.classList.add('authorization');
     passInfo.title.classList.add('authorization__title');
@@ -182,13 +202,27 @@ export const messages = {
 
     nextPlacement: {
         title: `Authorization needed`,
-        body: (name) => ` <p>Admiral ${name},<p class= 'body-text'>Please authorize placement of carrier group`,
+        body: (name) =>
+            ` <p>Admiral ${name},<p class= 'body-text'>Please authorize placement of carrier group`,
         btn: `Authorize`,
     },
-     NextTurn: {
+    nextTurn: {
         title: `Authorization needed`,
-        body: (name) => ` <p>Admiral ${name},<p class= 'body-text'>Please authorize next Shot location`,
-        btn: `Authorize Shot`,
+        body: (name) =>
+            ` <p>Admiral ${name},<p class= 'body-text'>Please authorize next Shot location`,
+        btn: `Authorize next shot`,
     },
-    
 };
+
+export function showLiveUpdates(ship) {
+    let liveResponse;
+    if (!ship) {
+        liveResponse = 'We missed, Admiral';
+    } else if (ship.isSunk()) {
+        liveResponse = `Enemy ${ship.name} Sunk`;
+    } else {
+        liveResponse = `we have hit their ${ship.name}`;
+    }
+
+    domController.analytics.liveUpdate.textContent = liveResponse;
+}
