@@ -209,7 +209,7 @@ export class createGame {
             cor.classList.add('missed');
             showLiveUpdates(false);
         }
-        this.passLogic();
+        if (!this.vsBot) this.passLogic();
         this.gameTurn();
 
         if (
@@ -451,6 +451,7 @@ export class createGame {
                             msg.body(this.receivingPlayer.name),
                             msg.btn,
                         );
+                        
                     };
                     initiateAuthorization = () => {
                         this.#handleConfirm();
@@ -461,8 +462,26 @@ export class createGame {
                     };
                 } else {
                     confirmPlacement(firstPlayer);
+                    
+                    clickProcess = () => {
+                        const msg = messages.nextTurn;
+                        
+                        initiatePassing(
+                            msg.title,
+                            msg.body(this.currentPlayer.name),
+                            msg.btn,
+                        );
+                        console.log('here')
+                        component.authorization.article.style.visibility = 'visible'
+                    };
 
-                    clickProcess = () => this.#handleAfterPlacement();
+                    initiateAuthorization = () => {
+                        this.#handleAfterPlacement();
+                        component.authorization.btn.removeEventListener(
+                            'click',
+                            initiateAuthorization,
+                        );
+                    };
                 }
             }
 
@@ -489,6 +508,8 @@ export class createGame {
     #handleAfterPlacement() {
         domController.randomizeBtns.forEach((el) => el.parentNode.remove());
         // this.currentPlayerPlacement = this.playerTwo
+        component.authorization.article.style.visibility = 'hidden';
+
         domController.analytics.parent.classList.remove('no-visibility');
         afterPlacement();
         this.resetBoardUI();
@@ -506,10 +527,10 @@ export class createGame {
         this.gameStarted = true;
 
         this.receivingBoard
-                .querySelectorAll('.ship')
-                .forEach((el) => el.classList.add('no-visibility'));
+            .querySelectorAll('.ship')
+            .forEach((el) => el.classList.add('no-visibility'));
 
-        domController.boardOne.classList.add('disabled')
+        domController.boardOne.classList.add('disabled');
         domController.boardWrappers.forEach((el) =>
             el.removeEventListener('click', this.boundRotate),
         );
@@ -526,10 +547,6 @@ export class createGame {
             // this.boardControls()
         } else {
             this.receivingBoard.addEventListener('click', this.boundCorClick);
-            // domController.boardTwo.addEventListener(
-            //     'click',
-            //     this.#handleBoxClick.bind(this),
-            // );
         }
 
         // this.gameTurn();
@@ -736,7 +753,7 @@ export class createGame {
             );
             this.receivingBoard.classList.add('disabled');
 
-             let p1, p2;
+            let p1, p2;
             this.currentPlayer === this.playerOne
                 ? ((p1 = 'Your Ship'), (p2 = 'Enemy ships'))
                 : ((p2 = 'Your Ship'), (p1 = 'Enemy ships'));
@@ -748,7 +765,7 @@ export class createGame {
             domController.analytics.infoTwo.style.order = order;
             domController.boardTwoWrapper.style.order = order;
 
-            domController.analytics.liveUpdate.textContent = ''
+            domController.analytics.liveUpdate.textContent = '';
             component.authorization.article.style.visibility = 'visible';
             component.authorization.btn.addEventListener(
                 'click',
@@ -778,8 +795,6 @@ export class createGame {
             nextBoard.addEventListener('click', this.boundCorClick);
             nextBoard.classList.remove('disabled');
             this.receivingBoard.classList.add('disabled');
-
-           
         };
 
         const btn =
