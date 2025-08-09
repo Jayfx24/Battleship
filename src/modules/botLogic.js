@@ -6,6 +6,7 @@ export class botPlay {
         this.shots = new Set();
         this.firedShots = new Set();
         this.validShots = this.utils.possibleShots();
+        
         this.shotDirection = [];
         this.initialHit = null;
         this.currentShot = null;

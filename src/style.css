@@ -149,7 +149,8 @@ img {
 .ship-holder,
 .confirmation {
   padding: 1.5rem .3rem;
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: .5rem;
   align-content: start;
   /* border: 1px solid; */
@@ -157,6 +158,10 @@ img {
 
 }
 
+.ship-holder{
+  /* transform: rotate(90deg); */
+
+}
 .confirmation {
   padding: 1.5rem;
   box-shadow: 0px 4px 16px var(--shadow-md);
@@ -170,6 +175,8 @@ img {
   position: relative;
   z-index: 10;
   cursor: grabbing;
+  /* transform: rotate(90deg); */
+
 
 
 }

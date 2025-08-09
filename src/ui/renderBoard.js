@@ -131,13 +131,6 @@ export class createGame {
     placeShip(player, status = 'random') {
         // needs refactoring
         const ships = this.#shipsInfo();
-        const defaultShipsLoc = {
-            Carrier: { xCor: 0, yCor: 0 },
-            Battleship: { xCor: 1, yCor: 0 },
-            Destroyer: { xCor: 2, yCor: 0 },
-            Submarine: { xCor: 3, yCor: 0 },
-            PatrolBoat: { xCor: 4, yCor: 0 },
-        };
 
         if (status === 'random') {
             this.resetShipPlacement(player);
@@ -149,19 +142,21 @@ export class createGame {
                     value,
                     isHorizontal,
                 );
-                // const isHorizontal = orientation === 'vertical';
 
                 player.gameBoard.placeShip(ship, xCor, yCor, isHorizontal);
 
                 this.resetBoardUI();
             });
             this.utils.clearShipPos();
+            this.utils.resetShipCoord()
         }
     }
 
     #handleBoxClick(e) {
-        if (this.currentPlayer === this.prevPlayer) return;
-        if (this.currentPlayer === this.prevPBoard) return;
+        console.log('heree')
+        console.log('heree')
+        if (this.currentPlayer === this.prevPlayer && !this.vsBot) return;
+        if (this.currentPlayer === this.prevPBoard && !this.vsBot) return;
 
         const target = e.target;
         const cor = target.closest('.cor');
@@ -187,15 +182,10 @@ export class createGame {
         const xCor = cor.dataset.xCor;
         const yCor = cor.dataset.yCor;
         let ship = this.receivingPlayer.gameBoard.getBoard()[xCor][yCor];
-        let isSunk,
-            shipHit = null;
         this.sendShot(xCor, yCor);
         this.prevPlayer = this.currentPlayer;
         this.prevPBoard = this.receivingBoard;
-        parent.classList.add('disabled');
-        // document.querySelectorAll('.board').forEach((el) => {
-        //     if (el !== parent) el.classList.remove('disabled');
-        // });
+
         const invalid = ['', 0, 'X'];
         if (!invalid.includes(ship)) {
             shipEle.classList.add('ship-hit');
@@ -209,14 +199,13 @@ export class createGame {
             cor.classList.add('missed');
             showLiveUpdates(false);
         }
-        if (!this.vsBot) this.passLogic();
+        if (!this.vsBot) {
+            this.passLogic();
+            parent.classList.add('disabled');
+        }
         this.gameTurn();
 
-        if (
-            this.vsBot &&
-            this.gameStarted &&
-            this.receivingPlayer === this.playerOne
-        ) {
+        if (this.vsBot && this.gameStarted) {
             this.botTurn();
         }
     }
@@ -269,7 +258,7 @@ export class createGame {
         if (this.vsBot) {
             domController.boardTwoWrapper
                 .querySelectorAll('.ship')
-                .forEach((el) => el.classList.add('hide'));
+                .forEach((el) => el.classList.add('no-visibility'));
         }
         //  confirmPlacement(false); //for testing
     }
@@ -306,6 +295,7 @@ export class createGame {
         document.querySelectorAll('.ship-layer').forEach((el) => {
             el.addEventListener('mousedown', (e) => {
                 this.mouseDown(e);
+                el.style.visibility = 'visible';
             });
         });
         // this.activePlacementBoard.addEventListener(
@@ -356,6 +346,9 @@ export class createGame {
     }
 
     mouseUp(e) {
+        // if (this.startX === e.clientX &&  this.startY === e.clientY){
+        //     return this.boundRotate(e)
+        // }
         if (!this.isDragging) return;
         e.preventDefault();
 
@@ -386,7 +379,7 @@ export class createGame {
 
         // use first ele of ship to find loc or curs
         const target = firstBelow?.closest('.cor') || below.closest('.cor');
-
+        const targetRect = target.getBoundingClientRect();
         const handleInvalidDrop = () => {
             this.currentDraggable.style.visibility = 'visible';
             this.currentDraggable.style.left = 0;
@@ -414,10 +407,9 @@ export class createGame {
 
                 if (e.clientX < board.left || e.centerY > board.top)
                     handleInvalidDrop();
-                this.currentDraggable.style.left = e.clientX - this.startX;
-                // console.log(this.currentDraggable.style.left)
-                this.currentDraggable.style.top = e.clientY - this.startY;
+
                 this.resetBoardUI();
+                // this.currentDraggable.style.visibility = 'visible';
 
                 this.#handlePlacement(playerBoard);
             } else {
@@ -451,7 +443,6 @@ export class createGame {
                             msg.body(this.receivingPlayer.name),
                             msg.btn,
                         );
-                        
                     };
                     initiateAuthorization = () => {
                         this.#handleConfirm();
@@ -462,17 +453,18 @@ export class createGame {
                     };
                 } else {
                     confirmPlacement(firstPlayer);
-                    
+
                     clickProcess = () => {
                         const msg = messages.nextTurn;
-                        
+
                         initiatePassing(
                             msg.title,
                             msg.body(this.currentPlayer.name),
                             msg.btn,
                         );
-                        console.log('here')
-                        component.authorization.article.style.visibility = 'visible'
+                        console.log('here');
+                        component.authorization.article.style.visibility =
+                            'visible';
                     };
 
                     initiateAuthorization = () => {
@@ -504,6 +496,7 @@ export class createGame {
 
         this.shipStorage(component.placeHolder);
         component.playerSetts.appendChild(component.placeHolder);
+        this.dragStart();
     }
     #handleAfterPlacement() {
         domController.randomizeBtns.forEach((el) => el.parentNode.remove());
@@ -530,9 +523,8 @@ export class createGame {
             .querySelectorAll('.ship')
             .forEach((el) => el.classList.add('no-visibility'));
 
-        domController.boardOne.classList.add('disabled');
-        domController.boardWrappers.forEach((el) =>
-            el.removeEventListener('click', this.boundRotate),
+            domController.boardWrappers.forEach((el) =>
+                el.removeEventListener('click', this.boundRotate),
         );
         domController.boardContainer.removeEventListener(
             'mousedown',
@@ -547,6 +539,7 @@ export class createGame {
             // this.boardControls()
         } else {
             this.receivingBoard.addEventListener('click', this.boundCorClick);
+            domController.boardOne.classList.add('disabled');
         }
 
         // this.gameTurn();
@@ -593,7 +586,6 @@ export class createGame {
     }
 
     dragOnBoard(e) {
-        this.mousedownFired = true;
         const target = e.target.closest('.cor');
         if (!target) return;
         const child = target.querySelector('.ship');
@@ -641,9 +633,15 @@ export class createGame {
         // console.log(xCor, yCor);
         const ship = createShip(shipType, ships[shipType], positioning);
         playerBoard.removeShip(child.dataset.type);
+        // change dragged ship orientation
 
+        const dragShip = document.querySelector(
+            `.ship-layer[data-type="${child.dataset.type}"]`,
+        );
         if (this.checkIfValidDrop(ship, xCor, yCor, positioning)) {
             playerBoard.placeShip(ship, xCor, yCor, positioning);
+            dragShip.style.transform = 'rotate(90deg)';
+            console.log(dragShip);
             this.resetBoardUI();
         } else {
             playerBoard.placeShip(ship, xCor, yCor, !positioning);
@@ -665,6 +663,7 @@ export class createGame {
             this.shipStorage(component.placeHolder);
 
             component.playerSetts.appendChild(component.placeHolder);
+            this.dragStart();
         };
 
         domController.randomizeBtns.forEach((el) => {
@@ -709,6 +708,7 @@ export class createGame {
             shipHit = true;
             isSunk = ship.isSunk();
             activeShip.classList.add('ship-hit');
+            activeShip.classList.remove('no-visibility');
             console.log(activeShip);
             const part = activeShip.dataset.part;
             const type = activeShip.dataset.type;
@@ -717,6 +717,9 @@ export class createGame {
         } else {
             cor.classList.add('missed');
         }
+        this.prevPlayer = this.currentPlayer;
+        this.prevPBoard = this.receivingBoard;
+
         console.log(shipHit);
         this.botPlay.listener(shipHit, isSunk);
         this.gameTurn();
@@ -744,6 +747,7 @@ export class createGame {
     passLogic() {
         const initialPass = (e) => {
             const target = e.target;
+            // hides pop up btn for passing
             target.classList.add('hide');
             const msg = messages.nextTurn;
             initiatePassing(
