@@ -243,8 +243,8 @@ export class createGame {
         domController.boardTwo.innerHTML = '';
 
         // test
-
-        // initiatePassing(msg.title,msg.body(this.currentPlayer.name),msg.btn) // temp for testing
+//   const msg = messages.nextPlacement;
+//         initiatePassing(msg.title,msg.body(this.currentPlayer.name),msg.btn) // temp for testing
 
         this.createBoardUI(
             this.playerOne.gameBoard.getBoard(),

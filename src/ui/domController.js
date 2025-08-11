@@ -188,29 +188,28 @@ export function initiatePassing(title, body, btnTxt) {
 
 export const messages = {
     confirmPlacement: {
-        title: `ATTENTION NEEDED!!!`,
+        title: `⚓ Attention Required!`,
         body: (name) =>
-            `Admiral ${name}  Confirm if you are pleased with the placement of the battle group'`,
+            `Admiral ${name}, please confirm that you are satisfied with the current deployment of your battle group.`,
         btn: `Pass the device to Player 2`,
     },
     start: {
-        title: `ATTENTION NEEDED!!!`,
+        title: `⚓ All Hands Ready!`,
         body: (name) =>
-            `Admiral ${name}  Confirm if you are pleased with the placement of the battle group'`,
-        btn: `Start Game `,
+            `Admiral ${name}, confirm that your battle group is in position and ready for engagement.`,
+        btn: `Start Game`,
     },
-
     nextPlacement: {
-        title: `Authorization needed`,
+        title: `Authorization Needed`,
         body: (name) =>
-            ` <p>Admiral ${name},<p class= 'body-text'>Please authorize placement of carrier group`,
+            `<p>Admiral ${name},</p><p class="body-text">Authorize the placement of your carrier group before proceeding.</p>`,
         btn: `Authorize`,
     },
     nextTurn: {
-        title: `Authorization needed`,
+        title: `🪙 Authorization Needed`,
         body: (name) =>
-            ` <p>Admiral ${name},<p class= 'body-text'>Please authorize next Shot location`,
-        btn: `Authorize next shot`,
+            `<p>Admiral ${name},</p><p class="body-text">Authorize the coordinates for your next strike.</p>`,
+        btn: `Authorize Next Shot`,
     },
 };
 
