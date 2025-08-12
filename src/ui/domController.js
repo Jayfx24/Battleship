@@ -71,7 +71,7 @@ export function createForm() {
 
     component.form.innerHTML = `<div class ="form__radios">
                 
-                    <div class="form-group">
+                    <div class="form__checkbox ">
                         <input
                             type="radio"
                             name="playerChoice"
@@ -81,12 +81,12 @@ export function createForm() {
                             checked
 
                         />
-                        <label for="singlePlayer">Two Players </label
+                        <label class="checkbox__label active" for="singlePlayer">Two Players </label
                         >
                      </div>
                    
             
-                    <div class="form-group">
+                    <div class="form__checkbox">
                         <input
                             type="radio"
                             name="playerChoice"
@@ -95,19 +95,19 @@ export function createForm() {
                             class= "radio"                
                            
                         />
-                        <label for="twoPlayer">Single Player</label
+                        <label class="checkbox__label" for="twoPlayer">Single Player</label
                         >
                    
                     </div>
                     </div>
                      <div class="form__extra">
                     <div class="form-group">
-                        <label for="playerOne">Player One</label>
-                        <input type="text" name="playerOneName" id="playerOne" placeholder="Player One" />
+                        <label for="playerOne" class="name-input">Player One</label>
+                        <input type="text" name="playerOneName" id="playerOne"  placeholder="e.g Joe" />
                     </div>
-                    <div class="player__two__input">
-                        <label for="playerTwo">Player Two</label>
-                        <input type="text" name="playerTwoName" id="playerTwo" placeholder="Player Two" />
+                    <div class="form-group player__two__input">
+                        <label for="playerTwo" class="name-input">Player Two</label>
+                        <input type="text" name="playerTwoName" id="playerTwo"  placeholder="Player Two" />
                     </div>
                 </div>   
                 <button type="submit" class= "form__button"> Start </button>
@@ -121,8 +121,14 @@ export function createForm() {
 function toggleInput(e) {
     const target = e.target;
     const input = document.querySelector('.player__two__input');
-
+    const form = target.closest('form');
     if (!target.classList.contains('radio')) return;
+
+    form.querySelectorAll('.checkbox__label').forEach((el) =>
+        el.classList.remove('active'),
+    );
+    target.nextElementSibling.classList.add('active');
+
     if (target.value === 'vsBot') input.classList.add('hide');
     else input.classList.remove('hide');
 }

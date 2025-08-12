@@ -15,6 +15,7 @@
   /* colors */
   /* text */
   --white-70: hsla(119, 0%, 70%, 1);
+  --white-80: hsla(119, 0%, 80%, 1);
   --white-100: hsla(119, 0%, 100%, 1);
 
   --green-30: hsla(119, 98%, 30%, 1);
@@ -44,6 +45,10 @@ html {
 body {
   line-height: 1.6;
   /* color: grey; */
+  background-color: var(--blue-20);
+  background-color: hsla(245, 82%, 10%, 1);
+
+  color: var(--white-70);
 }
 
 
@@ -128,21 +133,27 @@ button {
   min-width: 300px;
   min-height: 350px;
   flex: 1;
+  /* border: 1px solid; */
+  padding: .5rem;
   /* align-content: start; */
+  
 
 }
 
 .cor {
-  border: 1px dotted;
+  border: 1px solid;
   border-radius: 2px;
   position: relative;
-  /* border-radius: 4px; */
+  border-radius: 4px;
   background-color: var(--box-clr);
   color: lightblue;
+  background-color:transparent;
+  /* border-left: 1px solid red; */
   /* background-color: lightblue; */
 }
 
-.cor:hover {
+
+.cor:hover { 
   cursor: crosshair;
 }
 
@@ -150,7 +161,7 @@ button {
   display: flex;
   border-radius: 1rem;
   flex: 1;
-  border: 1px solid;
+  /* border: 1px solid; */
   padding: 2.5rem 0.3rem;
 }
 
@@ -176,9 +187,18 @@ button {
 
 }
 
-
-
-
+.missed::before {
+  position: absolute;
+  content: '';
+  /* border: 5px solid lightblue; */
+  background-color: lightblue;
+  border-radius: 50%;
+  width: 28%;
+  height: 25%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
 
 .ship-holder .cor .ship {
   position: relative;
@@ -187,7 +207,7 @@ button {
 
 
 .missed {
-  background-color: lightblue;
+  /* background-color: lightblue; */
 }
 
 .hide {
@@ -292,16 +312,23 @@ button:hover {
   visibility: hidden;
 }
 
+.board__player_settings{
+  
+}
+
 /* form */
 form {
   display: grid;
-  border: 1px solid;
-  padding: 2rem;
+  /* border: 1px solid; */
+  padding:3rem 2.5rem;
   align-content: start;
-  gap: 2rem;
+  gap: 2.5rem;
   width: 100%;
   background-color: darkblue;
-  color: white;
+  background-color: hsla(245, 82%, 20%, .5);
+  /* background-color: hsla(245, 82%, 20%, .1); */
+  color: gray;
+  /* color: var(--white-70); */
   border-radius: inherit;
 
 }
@@ -313,29 +340,77 @@ form {
 }
 
 form label {
-  font-size: 1rem;
+  font-size: 0.875rem;
+  
+}
+
+.checkbox__label{
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  /* color:  hsla(245, 100%, 60%, 0.5) ; */
+  font-weight: 400;
+  cursor: pointer;
+  
+  
+}
+
+.name-input{
+  color: var(--white-80);
+  text-transform: uppercase;
+  font-weight: 600;
+  /* color:  hsla(245, 100%, 60%, 0.5) ; */
+  /* color: lightblue; */
+  /* color: var(--blue-40); */
+
+
 }
 
 form input[type="text"] {
-  font-size: 1rem;
+  font-size: 1.25rem;
+  font-weight: 500;
   padding: 1rem .875rem;
   width: 100%;
   margin-bottom: 1rem;
   border-radius: 8px;
   background-color: transparent;
-  border: 2px solid white;
+  border: none;
+  caret-color: var(--white-100);
+  border: 1px solid grey;
+  border-color:var(--blue-20);
+  color: var(--white-70);
 
+
+}
+
+form input[type="text"]::placeholder{
+  font-style: italic;
+  opacity: 0.2;
+  
+}
+
+form input[type="text"]:focus{
+  border:1.25px solid var(--green-70);
+  outline: none;
+  border-color: hsla(245, 82%, 70%, 1);
+  border-color: lightblue;
+
+}
+
+.form-group {
+  display: grid;
+  gap:.25rem;
+  align-content: start;
 }
 
 .form__button,
 .confirmation button {
-  /* justify-self: start; */
   /* margin-top: 1rem; */
-  background-color: #00cc66;
+  /* background-color: #00cc66; */
+  background-color: var(--blue-40);
+  /* background-color: green; */
   color: white;
-  font-size: 1.25rem;
-  /* border: 1px solid #00cc66;
-  outline: 1px solid #00cc66; */
+  padding-block: 1.25rem;
+  font-size:1.5rem;
   text-transform: uppercase;
   font-weight: 600;
 }
@@ -411,6 +486,9 @@ form input[type="text"] {
 .dock-ship {
   background-color: green;
   background-color: var(--ship-clr);
+  background-color: var(--blue-40);
+  background-color: var(--white-80);
+  background-color: var(--green-90);
   border-radius: 5px;
   /* position: absolute; */
 
@@ -421,7 +499,7 @@ form input[type="text"] {
   max-width: 1024px;
   /* box-shadow: var(--shadow-md); */
   border-radius: 8px;
-  border: 1px solid;
+  /* border: 1px solid; */
 }
 
 /* analytics */
@@ -520,4 +598,14 @@ form input[type="text"] {
 button {
   border: none;
   outline: none;
+}
+
+/*  */
+
+.active{
+  color:var(--white-100);
+  font-weight: 600;
+  /* color: lightblue; */
+  
+
 }

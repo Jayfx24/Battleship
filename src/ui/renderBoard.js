@@ -148,13 +148,12 @@ export class createGame {
                 this.resetBoardUI();
             });
             this.utils.clearShipPos();
-            this.utils.resetShipCoord()
+            this.utils.resetShipCoord();
         }
     }
 
     #handleBoxClick(e) {
-        console.log('heree')
-        console.log('heree')
+       
         if (this.currentPlayer === this.prevPlayer && !this.vsBot) return;
         if (this.currentPlayer === this.prevPBoard && !this.vsBot) return;
 
@@ -243,8 +242,8 @@ export class createGame {
         domController.boardTwo.innerHTML = '';
 
         // test
-//   const msg = messages.nextPlacement;
-//         initiatePassing(msg.title,msg.body(this.currentPlayer.name),msg.btn) // temp for testing
+        //   const msg = messages.nextPlacement;
+        //         initiatePassing(msg.title,msg.body(this.currentPlayer.name),msg.btn) // temp for testing
 
         this.createBoardUI(
             this.playerOne.gameBoard.getBoard(),
@@ -379,7 +378,6 @@ export class createGame {
 
         // use first ele of ship to find loc or curs
         const target = firstBelow?.closest('.cor') || below.closest('.cor');
-        const targetRect = target.getBoundingClientRect();
         const handleInvalidDrop = () => {
             this.currentDraggable.style.visibility = 'visible';
             this.currentDraggable.style.left = 0;
@@ -523,8 +521,8 @@ export class createGame {
             .querySelectorAll('.ship')
             .forEach((el) => el.classList.add('no-visibility'));
 
-            domController.boardWrappers.forEach((el) =>
-                el.removeEventListener('click', this.boundRotate),
+        domController.boardWrappers.forEach((el) =>
+            el.removeEventListener('click', this.boundRotate),
         );
         domController.boardContainer.removeEventListener(
             'mousedown',
@@ -578,7 +576,17 @@ export class createGame {
 
         const filled = this.currentPlayerPlacement.gameBoard.occupiedLocs();
 
-        if (!this.utils.isEmpty(filled, xCor, yCor, ship.length, isHor)) {
+        if (
+            !this.utils.isEmpty(
+                filled,
+                xCor,
+                yCor,
+                ship.length,
+                isHor,
+                
+
+            )
+        ) {
             return false;
         }
 
@@ -626,7 +634,7 @@ export class createGame {
             );
         const firstChild = currentShipLoc[0];
         const shipHead = firstChild.closest('.cor');
-
+        
         const positioning = child.dataset.positioning === 'true' ? false : true;
         const xCor = parseInt(shipHead.dataset.xCor);
         const yCor = parseInt(shipHead.dataset.yCor);
@@ -635,13 +643,10 @@ export class createGame {
         playerBoard.removeShip(child.dataset.type);
         // change dragged ship orientation
 
-        const dragShip = document.querySelector(
-            `.ship-layer[data-type="${child.dataset.type}"]`,
-        );
+        
         if (this.checkIfValidDrop(ship, xCor, yCor, positioning)) {
             playerBoard.placeShip(ship, xCor, yCor, positioning);
-            dragShip.style.transform = 'rotate(90deg)';
-            console.log(dragShip);
+            
             this.resetBoardUI();
         } else {
             playerBoard.placeShip(ship, xCor, yCor, !positioning);
