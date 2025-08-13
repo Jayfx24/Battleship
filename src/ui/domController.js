@@ -33,10 +33,15 @@ export const domController = {
         liveUpdate: document.querySelector('.live-update'),
     },
     boardPass: {
-        all: document.querySelector('.board-pass'),
+        all: document.querySelectorAll('.board-pass'),
         one: document.querySelector('.board-pass--one'),
         two: document.querySelector('.board-pass--two'),
     },
+    boardOpp: {
+         all: document.querySelectorAll('.board-opponent'),
+        one: document.querySelector('.board-opponent--one'),
+        two: document.querySelector('.board-opponent--two'),
+    }
 
     // cors : document.querySelectorAll('.cor')
 };
@@ -128,7 +133,7 @@ function toggleInput(e) {
         el.classList.remove('active'),
     );
     target.nextElementSibling.classList.add('active');
-
+   
     if (target.value === 'vsBot') input.classList.add('hide');
     else input.classList.remove('hide');
 }
@@ -144,8 +149,8 @@ export function confirmPlacement(playerOne) {
     const btnTxt = playerOne ? 'Pass device to Player 2' : 'Start Game';
 
     btn.textContent = btnTxt;
-    btn.style.color = playerOne ? 'darkblue' : 'green';
-    btn.style.backgroundColor = playerOne ? 'blue' : null;
+    btn.style.color = playerOne ? 'darkblue' : 'white';
+    btn.style.backgroundColor = playerOne ? 'blue' : 'hsla(119, 98%, 30%, 1)';
     component.confirmPlacement.parent.appendChild(text);
     component.confirmPlacement.parent.appendChild(btn);
     component.playerSetts.appendChild(component.confirmPlacement.parent);
@@ -169,9 +174,11 @@ export function afterPlacement() {
 export function initiatePassing(title, body, btnTxt) {
     const passInfo = component.authorization;
     const article = passInfo.article;
-    // article.innerHTML = '';
+    domController.boardContainer.classList.add('no-visibility')
 
     article.classList.add('authorization');
+    article.style.visibility ='visible';
+
     passInfo.title.classList.add('authorization__title');
     passInfo.body.classList.add('authorization__body');
     passInfo.btn.classList.add('authorization__btn');
