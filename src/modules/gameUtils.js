@@ -14,18 +14,16 @@ export function gameUtils() {
     function generateShipCor(length, position) {
         if (position == null || position === '')
             throw new Error('Orientation/direction not added');
-        console.log(shipCoord);
-        let c = 0;
+       
+     
         for (let cor of shipCoord) {
-            console.log(c++);
+           
             const { xCor, yCor } = cor;
             const mainAxis = position ? yCor : xCor;
             const isRandom = true;
             if (mainAxis + length - 1 < max)
                 if (isEmpty(shipPos, xCor, yCor, length, position, isRandom)) {
                     return { xCor, yCor };
-                } else {
-                    console.log({ xCor, yCor });
                 }
         }
 
@@ -61,7 +59,7 @@ export function gameUtils() {
                 spacePos.push(...addSpacing);
 
                 spacePos.forEach((cor) => spaceContainer.add(cor));
-                console.log(set);
+                
             }
         }
 
@@ -71,7 +69,6 @@ export function gameUtils() {
     function removeSpace(xCor, yCor, length, position) {
         let remove = [];
         for (let i = 0; i < length; i++) {
-            console.log('ss');
             const x = position ? xCor : xCor + i;
             const y = position ? yCor + i : yCor;
             let removeSpacing = [];

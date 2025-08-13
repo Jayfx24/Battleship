@@ -38,9 +38,9 @@ export const domController = {
         two: document.querySelector('.board-pass--two'),
     },
     boardOpp: {
-         all: document.querySelectorAll('.board-opponent'),
-        one: document.querySelector('.board-opponent--one'),
-        two: document.querySelector('.board-opponent--two'),
+         all: document.querySelectorAll('.board__opponent'),
+        one: document.querySelector('.board__opponent--one'),
+        two: document.querySelector('.board__opponent--two'),
     }
 
     // cors : document.querySelectorAll('.cor')
@@ -68,6 +68,50 @@ export const component = {
         btn: document.createElement('button'),
     },
 };
+
+
+export function createBoardUI(board, parent) {
+        if (!Array.isArray(board)) return;
+
+        const shipPartCount = {};
+        for (let i = 0; i < board.length; i++) {
+            let x = i;
+            let y = 0;
+
+            board[i].forEach((element, index) => {
+                const box = document.createElement('div');
+                box.classList.add('cor');
+
+                if (element || element === 0) {
+                    let ship = document.createElement('div');
+                    if (element === 'X') ship.classList.add('ship-hit');
+                    else if (element === 0) ship.classList.add('missed');
+                    else {
+                        ship.classList.add('ship');
+                    }
+                    // ship.draggable = true;
+                    ship.dataset.xCor = x;
+                    ship.dataset.yCor = y;
+                    ship.dataset.positioning = element.orientation;
+
+                    // chap ship missed to box
+                    ship.dataset.type = element.name;
+                    if (!shipPartCount[element.name])
+                        shipPartCount[element.name] = 0;
+                    shipPartCount[element.name]++;
+
+                    ship.dataset.part = shipPartCount[element.name];
+                    box.appendChild(ship);
+                    // this.updateShipHealth(element.name,shipPartCount[element.name])
+                }
+                box.dataset.xCor = x;
+                box.dataset.yCor = y;
+                y++;
+
+                parent.appendChild(box);
+            });
+        }
+    }
 
 export function createForm() {
     domController.boardTwoWrapper.style.display = 'none';
