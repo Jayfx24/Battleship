@@ -38,10 +38,10 @@ export const domController = {
         two: document.querySelector('.board-pass--two'),
     },
     boardOpp: {
-         all: document.querySelectorAll('.board__opponent'),
+        all: document.querySelectorAll('.board__opponent'),
         one: document.querySelector('.board__opponent--one'),
         two: document.querySelector('.board__opponent--two'),
-    }
+    },
 
     // cors : document.querySelectorAll('.cor')
 };
@@ -69,49 +69,48 @@ export const component = {
     },
 };
 
-
 export function createBoardUI(board, parent) {
-        if (!Array.isArray(board)) return;
+    if (!Array.isArray(board)) return;
 
-        const shipPartCount = {};
-        for (let i = 0; i < board.length; i++) {
-            let x = i;
-            let y = 0;
+    const shipPartCount = {};
+    for (let i = 0; i < board.length; i++) {
+        let x = i;
+        let y = 0;
 
-            board[i].forEach((element, index) => {
-                const box = document.createElement('div');
-                box.classList.add('cor');
+        board[i].forEach((element, index) => {
+            const box = document.createElement('div');
+            box.classList.add('cor');
 
-                if (element || element === 0) {
-                    let ship = document.createElement('div');
-                    if (element === 'X') ship.classList.add('ship-hit');
-                    else if (element === 0) ship.classList.add('missed');
-                    else {
-                        ship.classList.add('ship');
-                    }
-                    // ship.draggable = true;
-                    ship.dataset.xCor = x;
-                    ship.dataset.yCor = y;
-                    ship.dataset.positioning = element.orientation;
-
-                    // chap ship missed to box
-                    ship.dataset.type = element.name;
-                    if (!shipPartCount[element.name])
-                        shipPartCount[element.name] = 0;
-                    shipPartCount[element.name]++;
-
-                    ship.dataset.part = shipPartCount[element.name];
-                    box.appendChild(ship);
-                    // this.updateShipHealth(element.name,shipPartCount[element.name])
+            if (element || element === 0) {
+                let ship = document.createElement('div');
+                if (element === 'X') ship.classList.add('ship-hit');
+                else if (element === 0) ship.classList.add('missed');
+                else {
+                    ship.classList.add('ship');
                 }
-                box.dataset.xCor = x;
-                box.dataset.yCor = y;
-                y++;
+                // ship.draggable = true;
+                ship.dataset.xCor = x;
+                ship.dataset.yCor = y;
+                ship.dataset.positioning = element.orientation;
 
-                parent.appendChild(box);
-            });
-        }
+                // chap ship missed to box
+                ship.dataset.type = element.name;
+                if (!shipPartCount[element.name])
+                    shipPartCount[element.name] = 0;
+                shipPartCount[element.name]++;
+
+                ship.dataset.part = shipPartCount[element.name];
+                box.appendChild(ship);
+                // this.updateShipHealth(element.name,shipPartCount[element.name])
+            }
+            box.dataset.xCor = x;
+            box.dataset.yCor = y;
+            y++;
+
+            parent.appendChild(box);
+        });
     }
+}
 
 export function createForm() {
     domController.boardTwoWrapper.style.display = 'none';
@@ -177,7 +176,7 @@ function toggleInput(e) {
         el.classList.remove('active'),
     );
     target.nextElementSibling.classList.add('active');
-   
+
     if (target.value === 'vsBot') input.classList.add('hide');
     else input.classList.remove('hide');
 }
@@ -190,7 +189,7 @@ export function confirmPlacement(playerOne) {
     const btn = component.confirmPlacement.confirmBtn;
     text.textContent =
         'Admiral, Confirm if you are pleased with the placement of the battle group';
-    const btnTxt = playerOne ? 'Pass device to Player 2' : 'Start Game';
+    const btnTxt = playerOne ? 'Pass device' : 'Start Game';
 
     btn.textContent = btnTxt;
     btn.style.color = playerOne ? 'darkblue' : 'white';
@@ -218,10 +217,10 @@ export function afterPlacement() {
 export function initiatePassing(title, body, btnTxt) {
     const passInfo = component.authorization;
     const article = passInfo.article;
-    domController.boardContainer.classList.add('no-visibility')
+    domController.boardContainer.classList.add('no-visibility');
 
     article.classList.add('authorization');
-    article.style.visibility ='visible';
+    article.style.visibility = 'visible';
 
     passInfo.title.classList.add('authorization__title');
     passInfo.body.classList.add('authorization__body');
@@ -267,6 +266,32 @@ export const messages = {
         body: (name) =>
             `<p>Admiral ${name},</p><p class="body-text">Authorize the coordinates for your next strike.</p>`,
         btn: `Authorize Next Shot`,
+    },
+    winner: {
+        title: (name) => `🏆 Mission Accomplished, Admiral ${name}!`,
+        body: (name) =>
+            `<p>Admiral ${name},</p>
+         <p class="body-text">
+            Your fleet has achieved total dominance at sea. All enemy vessels have been sunk, 
+            and the battle is won. The crew salutes your brilliant strategy.
+         </p>
+         <p class="body-text">
+            Stand by for your next mission.
+         </p>`,
+        btn: `⚓ Engage in Another Battle`,
+
+    },
+    AIwin: {
+        title: (name) => `⚠ Defeat at Sea, Admiral ${name}!`,
+        body: (name) =>
+            `<p>Admiral ${name},</p>
+     <p class="body-text">
+        The AI fleet has overwhelmed our defenses and sent every last ship to the depths.
+     </p>
+     <p class="body-text">
+        Is there still hope for humanity?.
+     </p>`,
+        btn: `Plan your revenge`,
     },
 };
 

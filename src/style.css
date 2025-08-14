@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Space+Mono:wght@400;700&display=swap');
+
 :root {
   --size: 2.5rem;
   --shadow-md: rgba(0, 0, 0, 0.1);
@@ -10,6 +12,9 @@
   --p: 1rem/1.4em;
   --p2: .875rem/1.4em;
 
+  --ff-1: "Space Mono", monospace;
+  --ff-2: "Poppins", sans-serif;
+  --ff-3: "Special Elite", system-ui;
 
 
   /* colors */
@@ -25,7 +30,7 @@
   /* --blue-20: hsla(245, 82%, 20%, 1);
   --blue-40: hsla(245, 82%, 40%, 1); */
 
-    --blue-20: hsla(245, 82%, 20%, 1);
+  --blue-20: hsla(245, 82%, 20%, 1);
   --blue-40: hsla(245, 82%, 40%, 1);
 
   /* hsl(242 100% 60%) */
@@ -51,7 +56,7 @@ body {
   background-color: var(--blue-20);
   background-color: hsla(245, 82%, 10%, 1);
   /* background-color: hsla(245, 82%, 12%, 1); */
-
+  font-family: var(--ff-1);
   color: var(--white-70);
 }
 
@@ -116,7 +121,7 @@ button {
   padding: 1rem;
   height: 70%;
   max-width: 1024px;
-  
+
 
 }
 
@@ -140,9 +145,9 @@ button {
   min-height: 350px;
   flex: 1;
 
- 
+
   /* align-content: start; */
-  
+
 
 }
 
@@ -153,13 +158,13 @@ button {
   border-radius: 4px;
   color: lightblue;
   color: var(--blue-20);
-  background-color:transparent;
+  background-color: transparent;
   /* border-left: 1px solid red; */
   /* background-color: lightblue; */
 }
 
 
-.cor:hover { 
+.cor:hover {
   /* cursor: crosshair; */
 }
 
@@ -203,10 +208,11 @@ button {
   left: 50%;
   transform: translate(-50%, -50%);
 }
-.missed::before{
+
+.missed::before {
   content: '';
   background-color: lightblue;
-  
+
 }
 
 /* .ship.ship-hit::before {
@@ -246,8 +252,9 @@ button {
 }
 
 .ship-holder {
-    padding: 1.5rem .3rem;
+  padding: 1.5rem .3rem;
 }
+
 .confirmation {
   padding: 3rem;
   box-shadow: 0px 4px 16px var(--shadow-md);
@@ -260,10 +267,11 @@ button {
   font-size: 1.25rem;
 }
 
-.confirmation button{
+.confirmation button {
   color: white;
   margin-top: auto;
 }
+
 .ship-layer {
   display: flex;
   gap: .25rem;
@@ -305,9 +313,10 @@ button {
   font-weight: 600;
 }
 
-.player-info__name{
+.player-info__name {
   color: var(--white-100);
 }
+
 /* buttons */
 
 
@@ -339,15 +348,13 @@ button:hover {
   visibility: hidden;
 }
 
-.board__player_settings{
-  
-}
+.board__player_settings {}
 
 /* form */
 form {
   display: grid;
   /* border: 1px solid; */
-  padding:3rem 2.5rem;
+  padding: 3rem 2.5rem;
   align-content: start;
   gap: 2.5rem;
   width: 100%;
@@ -358,6 +365,7 @@ form {
   color: gray;
   /* color: var(--white-70); */
   border-radius: inherit;
+  font-family: var(--ff-2);
 
 }
 
@@ -369,20 +377,20 @@ form {
 
 form label {
   font-size: 0.875rem;
-  
+
 }
 
-.checkbox__label{
+.checkbox__label {
   text-transform: uppercase;
   letter-spacing: 2px;
   /* color:  hsla(245, 100%, 60%, 0.5) ; */
   font-weight: 400;
   cursor: pointer;
-  
-  
+
+
 }
 
-.name-input{
+.name-input {
   color: var(--white-80);
   text-transform: uppercase;
   font-weight: 600;
@@ -404,20 +412,20 @@ form input[type="text"] {
   border: none;
   caret-color: var(--white-100);
   border: 1px solid grey;
-  border-color:var(--blue-20);
+  border-color: var(--blue-20);
   color: var(--white-70);
 
 
 }
 
-form input[type="text"]::placeholder{
+form input[type="text"]::placeholder {
   font-style: italic;
   opacity: 0.2;
-  
+
 }
 
-form input[type="text"]:focus{
-  border:1.25px solid var(--green-70);
+form input[type="text"]:focus {
+  border: 1.25px solid var(--green-70);
   outline: none;
   border-color: hsla(245, 82%, 70%, 1);
   border-color: lightblue;
@@ -426,7 +434,7 @@ form input[type="text"]:focus{
 
 .form-group {
   display: grid;
-  gap:.25rem;
+  gap: .25rem;
   align-content: start;
 }
 
@@ -436,12 +444,14 @@ form input[type="text"]:focus{
   background-color: var(--blue-40);
   color: var(--blue-20);
   padding-block: 1rem;
-  font-size:1.25rem;
+  font-size: 1.25rem;
   text-transform: uppercase;
   font-weight: 600;
+  margin-top: auto;
+  font-family: inherit;
 }
 
-.form__button:hover{
+.form__button:hover {
   color: var(--white-100);
   opacity: 1;
   background-color: var(--green-30);
@@ -470,41 +480,48 @@ form input[type="text"]:focus{
   line-height: 1.5;
   max-width: 1024px;
   box-shadow: 0px -4px 2rem var(--shadow-md);
-
-  /* letter-spacing: 2px; */
+  font-weight: 400;
+  font-family: var(--ff-1);
+  letter-spacing: 2px;
 }
 
 
 .authorization__title {
-  font-size: clamp(1rem,1.875rem,4rem);
+  font-size: clamp(1rem, 1.875rem, 4rem);
   font-weight: 600;
   /* text-decoration: underline; */
   text-transform: uppercase;
   text-align: center;
   z-index: 5;
   word-break: break-word;
+  font-family: var(--ff-1);
+
 
 }
 
 .authorization__body {
   font-size: 1.25rem;
   /* font-weight: 300; */
+
 }
 
 .body-text {
   /* margin-left: 3rem; */
   margin-top: 1rem;
+
 }
 
 .authorization__btn {
   align-self: self-end;
   font-size: 1em;
-  padding: 1rem 3rem ;
+  padding: 1rem 3rem;
   background-color: hsl(0, 100%, 51%);
   /* color:  hsl(0, 81%, 38%); */
   /* color: white; */
   font-weight: 600;
   margin-top: auto;
+  font-family: var(--ff-1);
+
 }
 
 .authorization__secrets {
@@ -513,11 +530,11 @@ form input[type="text"]:focus{
   top: 0;
   padding: 0 1rem;
   opacity: 1;
- 
+
 }
 
 .secrets__img {
-  width: clamp(100px,150px,300px);
+  width: clamp(100px, 150px, 300px);
   /* transform: rotate(20deg); */
 }
 
@@ -549,13 +566,13 @@ form input[type="text"]:focus{
 
   width: 100%;
   padding: 1.5rem;
-  /* box-shadow: 0px 10px 2rem rgba(0, 0, 0, 0.1); */
  
+  font-weight: 700;
   border-radius: inherit;
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
-  /* visibility: hidden; */
+  
 }
 
 .analytics__update {
@@ -568,6 +585,8 @@ form input[type="text"]:focus{
   font-weight: 600;
   text-transform: uppercase;
   color: var(--white-100);
+  visibility: visible;
+  font-family: var(--ff-2);
 
 }
 
@@ -643,15 +662,16 @@ form input[type="text"]:focus{
   z-index: 99;
   opacity: .5;
 }
-.board-pass:hover{
+
+.board-pass:hover {
   color: var(--white-100);
   opacity: 1;
-  
+
 
 }
 
-.sunk{
-  background-color: hsla(355, 90%, 25%, 1)  ;
+.sunk {
+  background-color: hsla(355, 90%, 25%, 1);
 }
 
 /*  */
@@ -660,22 +680,22 @@ form input[type="text"]:focus{
 }
 
 
-.active{
-  color:var(--white-100);
+.active {
+  color: var(--white-100);
   font-weight: 600;
   /* color: lightblue; */
-  
+
 }
 
-.active-enemy-board{
+.active-enemy-board {
   color: red;
   font-style: italic;
 }
 
-.crosshair{
+.crosshair {
   cursor: crosshair;
 }
 
-.not-allowed{
-  cursor:not-allowed;
+.not-allowed {
+  cursor: not-allowed;
 }

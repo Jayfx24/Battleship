@@ -34,11 +34,10 @@ export class botPlay {
                 this.shipHit = null;
                 this.dir = this.orientation(this.dir);
                 if (this.dir) this.shotDirection.push(this.dir);
-                console.log('pushed  here');
-                console.log(this.currentShot);
+               
             } else this.shipHit = true;
             if (isSunk) {
-                console.log(isSunk);
+               
                 this.resetTracking();
             }
             // this.isHit();
@@ -48,10 +47,9 @@ export class botPlay {
         if (this.followUpHit) {
             // activates for second hit
             // 3rd now
-            console.log('listener Active');
-            console.log(this.shotDirection);
+           
             const nextShot = this.isHit();
-            console.log(this.shotDirection);
+            
             if (nextShot) {
                 this.firedShots.add(`${nextShot.xCor}:${nextShot.yCor}`);
                 this.currentShot = nextShot;
@@ -64,13 +62,13 @@ export class botPlay {
         this.firedShots.add(
             `${this.currentShot.xCor}:${this.currentShot.yCor}`,
         );
-        console.log(this.firedShots);
+       
         return this.currentShot;
     }
 
     isHit() {
         // for second shot
-        // cuz missed current == initial
+        // missed current = initial
         const { xCor, yCor } = this.currentShot;
 
         const moves = {
@@ -82,7 +80,7 @@ export class botPlay {
 
         const shuffledMove = this.utils.shuffle(Object.entries(moves))
         // if dir causes hit save and continue the direction
-        console.log(this.dir);
+      
         if (this.dir) {
             const [x, y] = moves[this.dir];
             const newX = xCor + x;
@@ -91,13 +89,13 @@ export class botPlay {
 
             console.log(nextShot);
 
-            // console.log('continue direction');
+          
 
             if (!nextShot && this.shipHit) {
                 this.currentShot = this.initialHit;
                 this.dir = this.orientation(this.dir);
                 this.shotDirection.push(this.dir);
-                console.log(`changing orientation to ${this.dir}`);
+               
                 return this.isHit();
             }
 
@@ -116,7 +114,7 @@ export class botPlay {
                 this.dir = direction;
                 this.shotDirection.push(direction);
                 const nextShot = this.positionChecker(newX, newY);
-                console.log(this.dir);
+               
 
                 if (nextShot) return nextShot;
             }
