@@ -14,10 +14,8 @@ export function gameUtils() {
     function generateShipCor(length, position) {
         if (position == null || position === '')
             throw new Error('Orientation/direction not added');
-       
-     
+
         for (let cor of shipCoord) {
-           
             const { xCor, yCor } = cor;
             const mainAxis = position ? yCor : xCor;
             const isRandom = true;
@@ -34,7 +32,6 @@ export function gameUtils() {
         let removedSpaces = [];
         let spacePos = [];
 
-        // if (isRotate) removedSpaces = removeSpace(xCor, yCor, length, !position);
         for (let i = 0; i < length; i++) {
             const x = position ? xCor : xCor + i;
             const y = position ? yCor + i : yCor;
@@ -52,16 +49,20 @@ export function gameUtils() {
                 let addSpacing = [];
                 if (position) {
                     addSpacing = [`${x + 1},${y}`, `${x - 1},${y}`];
+                    if (i === 0) addSpacing.push(`${x},${y - 1}`);
+                    if (i === length - 1) addSpacing.push(`${x},${y + 1}`);
                 } else {
                     addSpacing = [`${x},${y - 1}`, `${x},${y + 1}`];
+                    if (i === 0) addSpacing.push(`${x - 1},${y}`);
+                    if (i === length - 1) addSpacing.push(`${x + 1},${y}`);
                 }
 
-                spacePos.push(...addSpacing);
-
-                spacePos.forEach((cor) => spaceContainer.add(cor));
-                
+                addSpacing.forEach((cor) => {
+                    if (!set.has(cor)) spaceContainer.add(cor);
+                });
             }
         }
+        spacePos.forEach((cor) => spaceContainer.add(cor));
 
         // console.log(holder)
         return true;

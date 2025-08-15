@@ -15,7 +15,7 @@ import {
 } from './domController.js';
 import { gameUtils } from '../modules/gameUtils.js';
 import { botPlay } from '../modules/botLogic.js';
-
+import { audio,setAudio } from '../modules/audio.js';
 export class createGame {
     constructor() {
         this.utils = gameUtils();
@@ -53,6 +53,7 @@ export class createGame {
     game() {
         this.resetBoardUI();
         this.loadPrompt(); // temp location
+        setAudio(true,0.2)
     }
 
     loadPrompt() {
@@ -137,6 +138,7 @@ export class createGame {
         const invalid = ['', 0, 'X'];
         const isValidTarget = !invalid.includes(ship);
         if (isValidTarget) {
+            audio.hit.play()
             shipEle.classList.add('ship-hit');
             shipEle.classList.remove('no-visibility');
 
@@ -147,6 +149,8 @@ export class createGame {
             this.updateShipHealth(type, part, ship.isSunk());
         } else if (invalid.includes(ship)) {
             cor.classList.add('missed');
+            audio.miss.play()
+
             showLiveUpdates(false);
         }
         if (!this.vsBot) {
@@ -419,6 +423,7 @@ export class createGame {
                         );
                     };
                     initiateAuthorization = () => {
+                        audio.click.play()
                         domController.boardContainer.classList.remove(
                             'no-visibility',
                         );
@@ -445,11 +450,14 @@ export class createGame {
                     };
 
                     initiateAuthorization = () => {
+                        audio.click.play()
+
                         domController.boardContainer.classList.remove(
                             'no-visibility',
                         );
 
                         this.#handleAfterPlacement();
+
                         component.authorization.btn.removeEventListener(
                             'click',
                             initiateAuthorization,
@@ -675,6 +683,8 @@ export class createGame {
         );
 
         if (!invalid.includes(ship)) {
+            audio.hit.play()
+
             const activeShip = cor.querySelector(`.ship`);
             shipHit = true;
             isSunk = ship.isSunk();
@@ -686,6 +696,8 @@ export class createGame {
             
             this.updateShipHealth(type, part, isSunk);
         } else {
+            audio.miss.play()
+
             cor.classList.add('missed');
         }
         this.prevPlayer = this.currentPlayer;
@@ -757,6 +769,8 @@ export class createGame {
         };
 
         const afterApproval = () => {
+                        audio.click.play()
+
             component.authorization.article.style.visibility = 'hidden';
             domController.boardContainer.classList.remove('no-visibility');
             this.updateBoardOpp();
