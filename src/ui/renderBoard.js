@@ -15,7 +15,7 @@ import {
 } from './domController.js';
 import { gameUtils } from '../modules/gameUtils.js';
 import { botPlay } from '../modules/botLogic.js';
-import { audio,setAudio } from '../modules/audio.js';
+import { audio, setAudio } from '../modules/audio.js';
 export class createGame {
     constructor() {
         this.utils = gameUtils();
@@ -53,7 +53,8 @@ export class createGame {
     game() {
         this.resetBoardUI();
         this.loadPrompt(); // temp location
-        setAudio(true,0.2)
+        setAudio(true, 0.2);
+        
     }
 
     loadPrompt() {
@@ -123,7 +124,6 @@ export class createGame {
             return;
         // if (this.targetBoard !== domController.boardOne) return;
 
-        
         const shipEle = cor?.querySelector('.ship');
         console.log(shipEle);
         // send Cor
@@ -131,6 +131,7 @@ export class createGame {
         const xCor = cor.dataset.xCor;
         const yCor = cor.dataset.yCor;
         let ship = this.targetPlayer.gameBoard.getBoard()[xCor][yCor];
+
         this.sendShot(xCor, yCor);
         this.prevPlayer = this.currentPlayer;
         this.prevPBoard = this.targetBoard;
@@ -138,7 +139,9 @@ export class createGame {
         const invalid = ['', 0, 'X'];
         const isValidTarget = !invalid.includes(ship);
         if (isValidTarget) {
-            audio.hit.play()
+            const isSunk = ship.isSunk();
+            if (isSunk) audio.sunk().play();
+            else audio.hit().play();
             shipEle.classList.add('ship-hit');
             shipEle.classList.remove('no-visibility');
 
@@ -149,7 +152,7 @@ export class createGame {
             this.updateShipHealth(type, part, ship.isSunk());
         } else if (invalid.includes(ship)) {
             cor.classList.add('missed');
-            audio.miss.play()
+            audio.miss().play();
 
             showLiveUpdates(false);
         }
@@ -167,7 +170,7 @@ export class createGame {
             );
             setTimeout(() => {
                 this.botTurn();
-            }, 1000);
+            }, 2000);
         }
     }
 
@@ -180,7 +183,7 @@ export class createGame {
             this.targetPlayer === this.playerOne
                 ? domController.boardTwo
                 : domController.boardOne;
-        
+
         // toggle again to set current player
         this.currentPlayer =
             this.targetPlayer === this.playerOne
@@ -198,31 +201,43 @@ export class createGame {
     #isGameOver(player) {
         const isAllSunk = player.gameBoard.isAllShipSunk();
         if (!isAllSunk) return;
-        const winner = this.currentPlayer
-        if (this.vsBot && player.type == 'real') {
-            const msg = messages.AIwin;
-            console.log(player)
-            console.log(msg)
-            initiatePassing(
-                msg.title(player.name),
-                msg.body(player.name),
-                msg.btn,
-            );
-        } else {
-            const msg = messages.winner;
-            initiatePassing(
-                msg.title(winner.name),
-                msg.body(winner.name),
-                msg.btn,
-            );
+
+        const winner = this.currentPlayer;
+        this.gameStarted = false
+        
+
+        const isOver = () => {
+
+            if (this.vsBot && player.type == 'real') {
+                audio.defeat().play()
+                const msg = messages.AIwin;
+                console.log(player);
+                console.log(msg);
+                initiatePassing(
+                    msg.title(player.name),
+                    msg.body(player.name),
+                    msg.btn,
+                );
+            } else {
+                audio.victory().play()
+                const msg = messages.winner;
+                initiatePassing(
+                    msg.title(winner.name),
+                    msg.body(winner.name),
+                    msg.btn,
+                );
+    
+            }
+    
+            domController.analytics.parent.classList.add('hide');
+            const startOver = () => {
+                location.reload(true);
+            };
+            component.authorization.btn.addEventListener('click', startOver);
+        }
+        setTimeout(1000,isOver)
         }
 
-        domController.analytics.parent.classList.add('hide');
-        const startOver = () => {
-            location.reload(true);
-        };
-        component.authorization.btn.addEventListener('click', startOver);
-    }
 
     resetBoardUI() {
         domController.boardOne.innerHTML = '';
@@ -423,7 +438,7 @@ export class createGame {
                         );
                     };
                     initiateAuthorization = () => {
-                        audio.click.play()
+                        audio.click().play();
                         domController.boardContainer.classList.remove(
                             'no-visibility',
                         );
@@ -444,13 +459,13 @@ export class createGame {
                             msg.body(this.currentPlayer.name),
                             msg.btn,
                         );
-                       
+
                         component.authorization.article.style.visibility =
                             'visible';
                     };
 
                     initiateAuthorization = () => {
-                        audio.click.play()
+                        audio.click().play();
 
                         domController.boardContainer.classList.remove(
                             'no-visibility',
@@ -479,7 +494,7 @@ export class createGame {
     #handleConfirm() {
         resetPlacementBoard();
         component.authorization.article.style.visibility = 'hidden';
-       
+
         this.currentPlayerPlacement = this.playerTwo;
         this.activePlacementBoard = domController.boardTwo;
 
@@ -534,8 +549,10 @@ export class createGame {
 
         // this.gameTurn();
     }
-    setPlayerPref(e) {
+     setPlayerPref(e) {
         e.preventDefault();
+        
+        
         const formData = new FormData(component.form);
         const data = Object.fromEntries(formData.entries());
         const { playerChoice, playerOneName, playerTwoName } = data;
@@ -550,7 +567,6 @@ export class createGame {
 
         this.playerOne.name = domController.playerOne.name.textContent = pOne;
         this.playerTwo.name = domController.playerTwo.name.textContent = pTwo;
-        
 
         this.shipStorage(component.placeHolder);
         component.playerSetts.appendChild(component.placeHolder);
@@ -577,14 +593,12 @@ export class createGame {
         const target = e.target.closest('.cor');
         if (!target) return;
         const child = target.querySelector('.ship');
-       
 
         if (!child) return;
 
         const ship = document.querySelector(
             `.ship-layer[data-type="${child.dataset.type}"]`,
         );
-   
 
         ship.style.visibility = 'visible';
 
@@ -614,7 +628,7 @@ export class createGame {
         const positioning = child.dataset.positioning === 'true' ? false : true;
         const xCor = parseInt(shipHead.dataset.xCor);
         const yCor = parseInt(shipHead.dataset.yCor);
-        
+
         const ship = createShip(shipType, ships[shipType], positioning);
         playerBoard.removeShip(child.dataset.type);
         // change dragged ship orientation
@@ -683,28 +697,29 @@ export class createGame {
         );
 
         if (!invalid.includes(ship)) {
-            audio.hit.play()
-
-            const activeShip = cor.querySelector(`.ship`);
             shipHit = true;
             isSunk = ship.isSunk();
+            const activeShip = cor.querySelector(`.ship`);
+            if (isSunk) audio.sunk().play();
+            else audio.hit().play();
+
             activeShip.classList.add('ship-hit');
             activeShip.classList.remove('no-visibility');
-           
+
             const part = activeShip.dataset.part;
             const type = activeShip.dataset.type;
-            
+
             this.updateShipHealth(type, part, isSunk);
         } else {
-            audio.miss.play()
+            audio.miss().play();
 
             cor.classList.add('missed');
         }
         this.prevPlayer = this.currentPlayer;
         this.prevPBoard = this.targetBoard;
-       
+
         this.botPlay.listener(shipHit, isSunk);
-        this.#isGameOver(this.targetPlayer)
+        this.#isGameOver(this.targetPlayer);
         this.gameTurn();
         domController.boardTwo.addEventListener('click', this.boundCorClick);
     }
@@ -732,7 +747,6 @@ export class createGame {
                 .forEach((el) => el.classList.add('sunk'));
 
         hitPart.classList.add('ship-hit');
-       
     }
 
     passLogic() {
@@ -769,7 +783,7 @@ export class createGame {
         };
 
         const afterApproval = () => {
-                        audio.click.play()
+            audio.click().play();
 
             component.authorization.article.style.visibility = 'hidden';
             domController.boardContainer.classList.remove('no-visibility');
