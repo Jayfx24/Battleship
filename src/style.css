@@ -3,11 +3,7 @@
 :root {
   --size: 2.5rem;
   --shadow-md: rgba(0, 0, 0, 0.1);
-  /* --ship-clr: #2f4f4f; */
-  --box-clr: #4682b4;
-
   /* font sizes */
-
 
   --ff-1: "Space Mono", monospace;
   --ff-2: "Poppins", sans-serif;
@@ -26,11 +22,11 @@
 
 
 
+  --blue-10: hsla(245, 82%, 10%, 1);
   --blue-20: hsla(245, 82%, 20%, 1);
   --blue-40: hsla(245, 82%, 40%, 1);
 
-  /* hsl(242 100% 60%) */
-
+ 
 }
 
 
@@ -48,10 +44,12 @@ html {
 
 body {
   line-height: 1.6;
-  /* color: grey; */
+
   background-color: var(--blue-20);
   background-color: hsla(245, 82%, 10%, 1);
-  /* background-color: hsla(245, 82%, 12%, 1); */
+  background-color: var(--blue-10);
+ 
+
   font-family: var(--ff-1);
   color: var(--white-70);
 }
@@ -99,23 +97,17 @@ button {
   overflow-y: auto;
 }
 
-/* .wrapper > * {
-  flex: 1;
-} */
 
 
 .board-container {
   display: flex;
   flex-wrap: wrap;
   width: 100%;
-  /* min-width: 300px; */
+ 
   gap: 1rem;
   justify-content: center;
   margin-inline: auto;
   position: relative;
-  /* flex: 1; */
-  
-
   max-width: 1024px;
 
 
@@ -138,13 +130,8 @@ button {
   display: grid;
   grid-template-columns: repeat(10, minmax(35px, 1fr));
   grid-template-rows: repeat(10, minmax(35px, 1fr));
-  /* min-width: 350px;
-  min-height: 350px; */
-  flex: 1;
   aspect-ratio: 1;
 
-
-  /* align-content: start; */
 
 
 }
@@ -157,14 +144,11 @@ button {
   color: lightblue;
   color: var(--blue-20);
   background-color: transparent;
-  /* border-left: 1px solid red; */
-  /* background-color: lightblue; */
+ 
 }
 
 
-.cor:hover {
-  /* cursor: crosshair; */
-}
+
 
 .board__player_settings {
   display: flex;
@@ -183,22 +167,16 @@ button {
   width: 100%;
   height: 100%;
   position: relative;
-  /* border-radius: 4px; */
-
-  /* z-index: -1; */
 
 }
 
 .ship {
   background-color: green;
   position: absolute;
-  /* z-index: 1; */
-
 }
 
 .missed::before {
   position: absolute;
-  /* border: 5px solid lightblue; */
   border-radius: 50%;
   width: 28%;
   height: 25%;
@@ -213,26 +191,12 @@ button {
 
 }
 
-/* .ship.ship-hit::before {
-  content: '';
-  background-color: red;
-
-} */
-
-/* .dock-ship.ship-hit{
-  background-color: red;
-
-} */
 
 .ship-holder .cor .ship {
   position: relative;
   z-index: 100;
 }
 
-
-.missed {
-  /* background-color: lightblue; */
-}
 
 
 
@@ -243,9 +207,9 @@ button {
   flex-direction: column;
   gap: 1rem;
   align-content: start;
-  /* border: 1px solid; */
+ 
   width: 100%;
-  /* max-height: 100%; */
+ 
 
 }
 
@@ -255,7 +219,7 @@ button {
 
 .confirmation {
   padding: 3rem;
-  box-shadow: 0px 4px 16px var(--shadow-md);
+  box-shadow: 3px 3px 1rem var(--shadow-md);
   gap: 3rem;
   border-radius: 14px;
   color: var(--white-80);
@@ -285,14 +249,7 @@ button {
   background-color: green;
   position: relative;
   z-index: -1;
-  /* border:1px solid; */
 }
-
-.beingDragged {
-  /* opacity: 0; */
-}
-
-
 
 
 .board__controls,
@@ -306,14 +263,11 @@ button {
 }
 
 .board__player-info {
-  /* border: 1px solid; */
+ 
   padding: .3rem;
   font-weight: 600;
 }
 
-.player-info__name {
-  /* color: var(--white-100); */
-}
 
 
 /* volume */
@@ -337,11 +291,10 @@ button {
 /* buttons */
 
 
-.board__button {}
 
 .board__button--randomize {
-  /* box-shadow: 10px 4px 160px var(--shadow-md); */
   background-color: darkblue;
+  
 }
 
 button:hover {
@@ -370,19 +323,22 @@ button:hover {
 /* form */
 form {
   display: grid;
-  /* border: 1px solid; */
+ 
   padding: 3rem 2.5rem;
   align-content: start;
   gap: 2.5rem;
   width: 100%;
-  background-color: darkblue;
-  background-color: hsla(245, 82%, 20%, .5);
+
   background-color: hsla(245, 82%, 12%, .5);
-  /* background-color: hsla(245, 82%, 20%, .1); */
   color: gray;
-  /* color: var(--white-70); */
   border-radius: inherit;
   font-family: var(--ff-2);
+  transition: box-shadow 0.3s ease;
+
+}
+
+form:hover {
+  box-shadow: 3px 3px 1rem var(--shadow-md);
 
 }
 
@@ -400,7 +356,6 @@ form label {
 .checkbox__label {
   text-transform: uppercase;
   letter-spacing: 2px;
-  /* color:  hsla(245, 100%, 60%, 0.5) ; */
   font-weight: 400;
   cursor: pointer;
 
@@ -411,11 +366,6 @@ form label {
   color: var(--white-80);
   text-transform: uppercase;
   font-weight: 600;
-  /* color:  hsla(245, 100%, 60%, 0.5) ; */
-  /* color: lightblue; */
-  /* color: var(--blue-40); */
-
-
 }
 
 form input[type="text"] {
@@ -442,10 +392,9 @@ form input[type="text"]::placeholder {
 }
 
 form input[type="text"]:focus {
-  border: 1.25px solid var(--green-70);
+  border: 1.25px solid var(--blue-40);
   outline: none;
-  border-color: hsla(245, 82%, 70%, 1);
-  border-color: lightblue;
+ 
 
 }
 
@@ -457,21 +406,22 @@ form input[type="text"]:focus {
 
 .form__button,
 .confirmation button {
-  /* background-color: #00cc66; */
   background-color: var(--blue-40);
   color: var(--blue-20);
   padding-block: 1rem;
   font-size: 1.25rem;
   text-transform: uppercase;
   font-weight: 600;
-  margin-top: auto;
   font-family: inherit;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: background-color 0.3s ease-out;
 }
 
 .form__button:hover {
   color: var(--white-100);
   opacity: 1;
   background-color: var(--green-30);
+
 }
 
 /* authorization */
@@ -481,19 +431,19 @@ form input[type="text"]:focus {
   flex-direction: column;
   position: absolute;
   inset: 0;
-  /* margin-inline: auto; */
+ 
   min-height: fit-content;
   width: 100%;
   height: 100%;
   background-color: var(--blue-20);
+/* background-color: var(--blue-10); */
   color: var(--white-80);
   padding: 3rem;
   gap: 2.5rem;
   border-radius: 14px;
   z-index: 99;
   line-height: 1.5;
-  /* max-width: 1024px; */
-  box-shadow: 0px -4px 2rem var(--shadow-md);
+  box-shadow: 3px 3px 1rem var(--shadow-md);
   font-weight: 400;
 
   letter-spacing: 2px;
@@ -507,7 +457,6 @@ form input[type="text"]:focus {
   text-decoration: underline;
   text-underline-offset: .5rem;
   text-transform: uppercase;
-  /* text-align: center; */
   z-index: 5;
   word-break: break-word;
   font-family: var(--ff-1);
@@ -519,12 +468,12 @@ form input[type="text"]:focus {
 .authorization__body {
   font-size: 1.25rem;
   color: var(--white-80);
-  /* font-weight: 300; */
+ 
 
 }
 
 .body-text {
-  /* margin-left: 3rem; */
+
   margin-top: 1rem;
 
 }
@@ -534,8 +483,6 @@ form input[type="text"]:focus {
   font-size: 1em;
   padding: 1rem 3rem;
   background-color: hsl(0, 100%, 51%);
-  /* color:  hsl(0, 81%, 38%); */
-  /* color: white; */
   font-weight: 600;
   margin-top: auto;
   font-family: var(--ff-1);
@@ -553,7 +500,7 @@ form input[type="text"]:focus {
 
 .secrets__img {
   width: clamp(100px, 150px, 300px);
-  /* transform: rotate(20deg); */
+
 }
 
 
@@ -562,19 +509,16 @@ form input[type="text"]:focus {
 .ship,
 .dock-ship {
   background-color: green;
-
   background-color: var(--green-70);
   border-radius: 5px;
-  /* position: absolute; */
+
 
 }
 
 .board__notifier {
   width: 100%;
   max-width: 1024px;
-  /* box-shadow: var(--shadow-md); */
   border-radius: 8px;
-  /* border: 1px solid; */
 }
 
 /* analytics */
@@ -600,11 +544,10 @@ form input[type="text"]:focus {
 }
 
 .live-update {
+  visibility: visible;
   font-size: 1.5rem;
   font-weight: 600;
   text-transform: uppercase;
-  /* color: var(--white-100); */
-  visibility: visible;
   font-family: var(--ff-2);
 
 }
@@ -649,7 +592,7 @@ form input[type="text"]:focus {
   grid-template-columns: repeat(2, 100px);
   gap: .5rem;
   align-content: start;
-  /* border: 1px solid; */
+
 }
 
 .analytics__ship .dock-ship {
@@ -676,11 +619,10 @@ form input[type="text"]:focus {
   left: 50%;
   transform: translate(-50%, -50%);
   color: rgb(163, 39, 39);
- 
-
   background-color: red;
   z-index: 99;
   opacity: .5;
+
 }
 
 .board-pass:hover {
@@ -703,8 +645,7 @@ form input[type="text"]:focus {
 .active {
   color: var(--white-100);
   font-weight: 600;
-  /* color: lightblue; */
-
+ 
 }
 
 .active-enemy-board {

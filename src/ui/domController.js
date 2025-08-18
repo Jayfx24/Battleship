@@ -1,6 +1,6 @@
 import topSecretImg from '../assets/images/top-secret.svg';
 
-export const domController = {
+export const elements = {
     wrapper: document.querySelector('.wrapper'),
     boardContainer: document.querySelector('.board-container'),
     boardWrappers: document.querySelectorAll('.board__wrapper'),
@@ -47,7 +47,7 @@ export const domController = {
         all: document.querySelectorAll('.volume-svg'),
     },
 
-    // cors : document.querySelectorAll('.cor')
+   
 };
 export const component = {
     form: document.createElement('form'),
@@ -59,7 +59,7 @@ export const component = {
         text: document.createElement('p'),
         confirmBtn: document.createElement('button'),
 
-        // parent : document.createElement('div'),
+     
     },
     randSpan: document.createElement('span'),
     randomize: document.createElement('button'),
@@ -142,7 +142,7 @@ export function createBoardUI(board, parent) {
                 else {
                     ship.classList.add('ship');
                 }
-                // ship.draggable = true;
+              
                 ship.dataset.xCor = x;
                 ship.dataset.yCor = y;
                 ship.dataset.positioning = element.orientation;
@@ -155,7 +155,7 @@ export function createBoardUI(board, parent) {
 
                 ship.dataset.part = shipPartCount[element.name];
                 box.appendChild(ship);
-                // this.updateShipHealth(element.name,shipPartCount[element.name])
+               
             }
             box.dataset.xCor = x;
             box.dataset.yCor = y;
@@ -167,7 +167,7 @@ export function createBoardUI(board, parent) {
 }
 
 export function createForm() {
-    domController.boardTwoWrapper.style.display = 'none';
+    elements.boardTwoWrapper.style.display = 'none';
 
     component.playerSetts.className = 'board__player_settings';
 
@@ -217,7 +217,7 @@ export function createForm() {
 
     component.form.addEventListener('click', toggleInput);
     component.playerSetts.appendChild(component.form);
-    domController.boardContainer.appendChild(component.playerSetts);
+    elements.boardContainer.appendChild(component.playerSetts);
 }
 
 function toggleInput(e) {
@@ -254,25 +254,25 @@ export function confirmPlacement(playerOne) {
 }
 
 export function resetPlacementBoard() {
-    domController.boardOneWrapper.style.display = 'none';
-    domController.boardTwoWrapper.style.display = '';
-    // domController.boardTwoWrapper.style.order = 2;
+    elements.boardOneWrapper.style.display = 'none';
+    elements.boardTwoWrapper.style.display = '';
+   
     component.placeHolder.innerHTML = '';
     component.playerSetts.innerHTML = '';
 }
 
 export function afterPlacement() {
     component.playerSetts.style.display = 'none';
-    domController.boardOneWrapper.style.display = '';
-    domController.analytics.currentPlayerOne.textContent = 'Your Ship';
-    domController.analytics.currentPlayerTwo.textContent = 'Enemies Ship';
-    domController.instructions.forEach((el) => el.classList.add('hide'));
+    elements.boardOneWrapper.style.display = '';
+    elements.analytics.currentPlayerOne.textContent = 'Your Ship';
+    elements.analytics.currentPlayerTwo.textContent = 'Enemies Ship';
+    elements.instructions.forEach((el) => el.classList.add('hide'));
 }
 
 export function initiatePassing(title, body, btnTxt) {
     const passInfo = component.authorization;
     const article = passInfo.article;
-    domController.boardContainer.classList.add('no-visibility');
+    elements.boardContainer.classList.add('no-visibility');
 
     article.classList.add('authorization');
     article.style.visibility = 'visible';
@@ -283,7 +283,7 @@ export function initiatePassing(title, body, btnTxt) {
     passInfo.topSecret.classList.add('authorization__secrets');
     passInfo.topSecretImg.classList.add('secrets__img');
     passInfo.topSecretImg.src = topSecretImg;
-    //  console.log('../assets')
+   
     passInfo.title.textContent = title;
     passInfo.body.innerHTML = body;
     passInfo.btn.textContent = btnTxt;
@@ -294,7 +294,7 @@ export function initiatePassing(title, body, btnTxt) {
     article.appendChild(passInfo.btn);
     article.appendChild(passInfo.topSecret);
 
-    domController.boardContainer.appendChild(article);
+    elements.boardContainer.appendChild(article);
 }
 
 export function showLiveUpdates(ship) {
@@ -307,11 +307,11 @@ export function showLiveUpdates(ship) {
         liveResponse = `we have hit their ${ship.name}`;
     }
 
-    domController.analytics.liveUpdate.textContent = liveResponse;
+    elements.analytics.liveUpdate.textContent = liveResponse;
 }
 
 export function changeVolumeState() {
-    domController.volumeState.all.forEach((state) =>
+    elements.volumeState.all.forEach((state) =>
         state.classList.toggle('hide'),
     );
 }

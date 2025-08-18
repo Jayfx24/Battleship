@@ -41,7 +41,7 @@ export class botPlay {
             if (isSunk) {
                 this.resetTracking();
             }
-            // this.isHit();
+            
         }
     }
     nextShot() {
@@ -68,8 +68,7 @@ export class botPlay {
     }
 
     isHit() {
-        // for second shot
-        // missed current = initial
+       
         const { xCor, yCor } = this.currentShot;
 
         const moves = {

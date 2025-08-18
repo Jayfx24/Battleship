@@ -1,5 +1,4 @@
 import miss from '../assets/audio/miss.mp3';
-// import fired from '../assets/audio/shotFired.mp3';
 import hit from '../assets/audio/explosion.mp3';
 import sunk from '../assets/audio/destroyed.mp3';
 import victory from '../assets/audio/victory.mp3';
@@ -20,7 +19,6 @@ const createSound = (file) => {
 }
 export const audio = {
   miss: () => createSound(miss),
-  // fired: () => createSound(fired),
   hit: () => createSound(hit),
   sunk: () => createSound(sunk),
   victory: () => createSound(victory),
@@ -33,8 +31,4 @@ export const audio = {
 export function setAudio(enabled,volume = globalVol){
     audioEnabled = enabled
     globalVol = volume
-
-  
-
-   
 }
