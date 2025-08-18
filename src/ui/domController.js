@@ -3,8 +3,6 @@ import topSecretImg from '../assets/images/top-secret.svg';
 export const domController = {
     wrapper: document.querySelector('.wrapper'),
     boardContainer: document.querySelector('.board-container'),
-    // boardWrapperOne: document.querySelector('.board__wrapper--one'),
-    // boardWrapperTwo: document.querySelector('.board__wrapper--two'),
     boardWrappers: document.querySelectorAll('.board__wrapper'),
     boardOne: document.querySelector('.board--one'),
     boardTwo: document.querySelector('.board--two'),
@@ -18,6 +16,7 @@ export const domController = {
         info: document.querySelector('.board__player-info--two'),
         name: document.querySelector('.player-info__name--two'),
     },
+    instructions: document.querySelectorAll('.instructions'),
     playerTwoInfo: document.querySelector('.board__player-info--two'),
     randomizeBtns: document.querySelectorAll('.board__button--randomize'),
     resetBtns: document.querySelectorAll('.board__button--reset'),
@@ -41,6 +40,11 @@ export const domController = {
         all: document.querySelectorAll('.board__opponent'),
         one: document.querySelector('.board__opponent--one'),
         two: document.querySelector('.board__opponent--two'),
+    },
+
+    volumeState: {
+        parent: document.querySelector('.volume-state'),
+        all: document.querySelectorAll('.volume-svg'),
     },
 
     // cors : document.querySelectorAll('.cor')
@@ -69,6 +73,56 @@ export const component = {
     },
 };
 
+export const messages = {
+    confirmPlacement: {
+        title: `⚓ Attention Required!`,
+        body: `Commander, please confirm that you are satisfied with the current deployment of your battle group.`,
+        btn: `Pass the device`,
+    },
+    start: {
+        title: `⚓ All Hands Ready!`,
+        body: (name) =>
+            `Admiral ${name}, confirm that your battle group is in position and ready for engagement.`,
+        btn: `Start Game`,
+    },
+    nextPlacement: {
+        title: `Authorization Needed`,
+        body: (name) =>
+            `<p>Admiral ${name},</p><p class="body-text">Authorize the placement of your carrier group before proceeding.</p>`,
+        btn: `Authorize`,
+    },
+    nextTurn: {
+        title: `Authorization Needed`,
+        body: (name) =>
+            `<p>Admiral ${name},</p><p class="body-text">Authorize the coordinates for your next strike.</p>`,
+        btn: `Authorize Next Shot`,
+    },
+    winner: {
+        title: (name) => `Mission Accomplished, Admiral ${name}!`,
+        body: (name) =>
+            `<p>Admiral ${name},</p>
+         <p class="body-text">
+            Your fleet has achieved total dominance at sea. All enemy vessels have been sunk, 
+            and the battle is won. The crew salutes your brilliant strategy.
+         </p>
+         <p class="body-text">
+            Stand by for your next mission.
+         </p>`,
+        btn: `⚓ Engage in Another Battle`,
+    },
+    AIwin: {
+        title: (name) => `⚠ Defeat at Sea, Admiral ${name}!`,
+        body: (name) =>
+            `<p>Admiral ${name},</p>
+     <p class="body-text">
+        The AI fleet has overwhelmed our defenses and sent every last ship to the depths.
+     </p>
+     <p class="body-text">
+        Is there still hope for humanity?.
+     </p>`,
+        btn: `Plan your revenge`,
+    },
+};
 export function createBoardUI(board, parent) {
     if (!Array.isArray(board)) return;
 
@@ -187,8 +241,8 @@ export function confirmPlacement(playerOne) {
     parent.classList.add('confirmation');
     const text = component.confirmPlacement.text;
     const btn = component.confirmPlacement.confirmBtn;
-    text.textContent =
-        'Admiral, Confirm if you are pleased with the placement of the battle group';
+    const msg = messages.confirmPlacement
+        text.textContent = msg.body;
     const btnTxt = playerOne ? 'Pass device' : 'Start Game';
 
     btn.textContent = btnTxt;
@@ -212,6 +266,7 @@ export function afterPlacement() {
     domController.boardOneWrapper.style.display = '';
     domController.analytics.currentPlayerOne.textContent = 'Your Ship';
     domController.analytics.currentPlayerTwo.textContent = 'Enemies Ship';
+    domController.instructions.forEach((el) => el.classList.add('hide'));
 }
 
 export function initiatePassing(title, body, btnTxt) {
@@ -242,59 +297,6 @@ export function initiatePassing(title, body, btnTxt) {
     domController.boardContainer.appendChild(article);
 }
 
-export const messages = {
-    confirmPlacement: {
-        title: `⚓ Attention Required!`,
-        body: (name) =>
-            `Admiral ${name}, please confirm that you are satisfied with the current deployment of your battle group.`,
-        btn: `Pass the device to Player 2`,
-    },
-    start: {
-        title: `⚓ All Hands Ready!`,
-        body: (name) =>
-            `Admiral ${name}, confirm that your battle group is in position and ready for engagement.`,
-        btn: `Start Game`,
-    },
-    nextPlacement: {
-        title: `Authorization Needed`,
-        body: (name) =>
-            `<p>Admiral ${name},</p><p class="body-text">Authorize the placement of your carrier group before proceeding.</p>`,
-        btn: `Authorize`,
-    },
-    nextTurn: {
-        title: `🪙 Authorization Needed`,
-        body: (name) =>
-            `<p>Admiral ${name},</p><p class="body-text">Authorize the coordinates for your next strike.</p>`,
-        btn: `Authorize Next Shot`,
-    },
-    winner: {
-        title: (name) => `🏆 Mission Accomplished, Admiral ${name}!`,
-        body: (name) =>
-            `<p>Admiral ${name},</p>
-         <p class="body-text">
-            Your fleet has achieved total dominance at sea. All enemy vessels have been sunk, 
-            and the battle is won. The crew salutes your brilliant strategy.
-         </p>
-         <p class="body-text">
-            Stand by for your next mission.
-         </p>`,
-        btn: `⚓ Engage in Another Battle`,
-
-    },
-    AIwin: {
-        title: (name) => `⚠ Defeat at Sea, Admiral ${name}!`,
-        body: (name) =>
-            `<p>Admiral ${name},</p>
-     <p class="body-text">
-        The AI fleet has overwhelmed our defenses and sent every last ship to the depths.
-     </p>
-     <p class="body-text">
-        Is there still hope for humanity?.
-     </p>`,
-        btn: `Plan your revenge`,
-    },
-};
-
 export function showLiveUpdates(ship) {
     let liveResponse;
     if (!ship) {
@@ -306,4 +308,10 @@ export function showLiveUpdates(ship) {
     }
 
     domController.analytics.liveUpdate.textContent = liveResponse;
+}
+
+export function changeVolumeState() {
+    domController.volumeState.all.forEach((state) =>
+        state.classList.toggle('hide'),
+    );
 }

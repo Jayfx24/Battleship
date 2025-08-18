@@ -12,6 +12,7 @@ import {
     messages,
     showLiveUpdates,
     createBoardUI,
+    changeVolumeState,
 } from './domController.js';
 import { gameUtils } from '../modules/gameUtils.js';
 import { botPlay } from '../modules/botLogic.js';
@@ -53,7 +54,17 @@ export class createGame {
     game() {
         this.resetBoardUI();
         this.loadPrompt(); // temp location
+
+        // volume state
+        let soundOn = true;
         setAudio(true, 0.2);
+
+        const handleVol = () => {
+            soundOn = !soundOn;
+            setAudio(soundOn);
+            changeVolumeState();
+        };
+        domController.volumeState.parent.addEventListener('click', handleVol);
     }
 
     loadPrompt() {
@@ -435,7 +446,6 @@ export class createGame {
                         );
                     };
                     initiateAuthorization = () => {
-                        audio.click().play();
                         domController.boardContainer.classList.remove(
                             'no-visibility',
                         );
@@ -462,8 +472,6 @@ export class createGame {
                     };
 
                     initiateAuthorization = () => {
-                        audio.click().play();
-
                         domController.boardContainer.classList.remove(
                             'no-visibility',
                         );
@@ -563,7 +571,10 @@ export class createGame {
 
         this.playerOne.name = domController.playerOne.name.textContent = pOne;
         this.playerTwo.name = domController.playerTwo.name.textContent = pTwo;
-
+        const instruction = 'Click ship on board to rotate';
+        domController.instructions.forEach(
+            (el) => (el.textContent = instruction),
+        );
         this.shipStorage(component.placeHolder);
         component.playerSetts.appendChild(component.placeHolder);
         this.dragStart();
@@ -779,8 +790,6 @@ export class createGame {
         };
 
         const afterApproval = () => {
-            audio.click().play();
-
             component.authorization.article.style.visibility = 'hidden';
             domController.boardContainer.classList.remove('no-visibility');
             this.updateBoardOpp();
