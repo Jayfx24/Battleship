@@ -1,4 +1,3 @@
-import { domController } from './ui/domController.js';
 import { createGame } from './ui/renderBoard.js';
 import './style.css';
 
