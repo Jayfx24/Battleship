@@ -5,8 +5,11 @@ export class botPlay {
         this.utils = gameUtils();
         this.shots = new Set();
         this.firedShots = new Set();
-        this.validShots = this.utils.possibleShots();
-        
+        this.unfilteredShots = this.utils.possibleShots();
+        this.validShots = this.unfilteredShots.filter(
+            ({ xCor, yCor }) => (xCor + yCor) % 2 === 0,
+        );
+
         this.shotDirection = [];
         this.initialHit = null;
         this.currentShot = null;
@@ -34,10 +37,8 @@ export class botPlay {
                 this.shipHit = null;
                 this.dir = this.orientation(this.dir);
                 if (this.dir) this.shotDirection.push(this.dir);
-               
             } else this.shipHit = true;
             if (isSunk) {
-               
                 this.resetTracking();
             }
             // this.isHit();
@@ -47,9 +48,9 @@ export class botPlay {
         if (this.followUpHit) {
             // activates for second hit
             // 3rd now
-           
+
             const nextShot = this.isHit();
-            
+
             if (nextShot) {
                 this.firedShots.add(`${nextShot.xCor}:${nextShot.yCor}`);
                 this.currentShot = nextShot;
@@ -57,12 +58,12 @@ export class botPlay {
             }
         }
 
-        this.resetTracking()
+        this.resetTracking();
         if (this.validShots) this.currentShot = this.validShots.pop();
         this.firedShots.add(
             `${this.currentShot.xCor}:${this.currentShot.yCor}`,
         );
-       
+
         return this.currentShot;
     }
 
@@ -78,9 +79,9 @@ export class botPlay {
             bottom: [1, 0],
         };
 
-        const shuffledMove = this.utils.shuffle(Object.entries(moves))
+        const shuffledMove = this.utils.shuffle(Object.entries(moves));
         // if dir causes hit save and continue the direction
-      
+
         if (this.dir) {
             const [x, y] = moves[this.dir];
             const newX = xCor + x;
@@ -89,13 +90,11 @@ export class botPlay {
 
             console.log(nextShot);
 
-          
-
             if (!nextShot && this.shipHit) {
                 this.currentShot = this.initialHit;
                 this.dir = this.orientation(this.dir);
                 this.shotDirection.push(this.dir);
-               
+
                 return this.isHit();
             }
 
@@ -105,7 +104,7 @@ export class botPlay {
         // check each dir
         if (this.shotDirection.length === 4) {
             this.resetTracking();
-            return null
+            return null;
         }
         for (const [direction, [x, y]] of shuffledMove) {
             if (!this.shotDirection.includes(direction)) {
@@ -114,7 +113,6 @@ export class botPlay {
                 this.dir = direction;
                 this.shotDirection.push(direction);
                 const nextShot = this.positionChecker(newX, newY);
-               
 
                 if (nextShot) return nextShot;
             }

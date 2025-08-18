@@ -54,7 +54,6 @@ export class createGame {
         this.resetBoardUI();
         this.loadPrompt(); // temp location
         setAudio(true, 0.2);
-        
     }
 
     loadPrompt() {
@@ -77,7 +76,7 @@ export class createGame {
             Battleship: 4,
             Destroyer: 3,
             Submarine: 3,
-            PatrolBoat: 3,
+            PatrolBoat: 2,
         };
     }
     resetShipPlacement(player) {
@@ -140,8 +139,10 @@ export class createGame {
         const isValidTarget = !invalid.includes(ship);
         if (isValidTarget) {
             const isSunk = ship.isSunk();
+
             if (isSunk) audio.sunk().play();
             else audio.hit().play();
+
             shipEle.classList.add('ship-hit');
             shipEle.classList.remove('no-visibility');
 
@@ -203,13 +204,11 @@ export class createGame {
         if (!isAllSunk) return;
 
         const winner = this.currentPlayer;
-        this.gameStarted = false
-        
+        this.gameStarted = false;
 
         const isOver = () => {
-
             if (this.vsBot && player.type == 'real') {
-                audio.defeat().play()
+                audio.defeat().play();
                 const msg = messages.AIwin;
                 console.log(player);
                 console.log(msg);
@@ -219,25 +218,23 @@ export class createGame {
                     msg.btn,
                 );
             } else {
-                audio.victory().play()
+                audio.victory().play();
                 const msg = messages.winner;
                 initiatePassing(
                     msg.title(winner.name),
                     msg.body(winner.name),
                     msg.btn,
                 );
-    
             }
-    
+
             domController.analytics.parent.classList.add('hide');
             const startOver = () => {
                 location.reload(true);
             };
             component.authorization.btn.addEventListener('click', startOver);
-        }
-        setTimeout(1000,isOver)
-        }
-
+        };
+        setTimeout(isOver, 1000);
+    }
 
     resetBoardUI() {
         domController.boardOne.innerHTML = '';
@@ -549,10 +546,9 @@ export class createGame {
 
         // this.gameTurn();
     }
-     setPlayerPref(e) {
+    setPlayerPref(e) {
         e.preventDefault();
-        
-        
+
         const formData = new FormData(component.form);
         const data = Object.fromEntries(formData.entries());
         const { playerChoice, playerOneName, playerTwoName } = data;

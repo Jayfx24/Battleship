@@ -14,38 +14,42 @@ export function gameUtils() {
     function generateShipCor(length, position) {
         if (position == null || position === '')
             throw new Error('Orientation/direction not added');
+        const maxRetries = 100;
+        
+        for ( let i = 0; i < maxRetries;i++) {
+            const xCor = generateRandInt();
+            const yCor = generateRandInt();
 
-        for (let cor of shipCoord) {
-            const { xCor, yCor } = cor;
             const mainAxis = position ? yCor : xCor;
             const isRandom = true;
             if (mainAxis + length - 1 < max)
                 if (isEmpty(shipPos, xCor, yCor, length, position, isRandom)) {
                     return { xCor, yCor };
+                }else{
+                    console.log(i)
                 }
+            
         }
 
         throw new Error('No valid ship coordinate found! Kindly refresh');
     }
 
     function isEmpty(set, xCor, yCor, length, position, isRandom = false) {
-        let removedSpaces = [];
         let spacePos = [];
 
-        for (let i = 0; i < length; i++) {
+        for (let i = 0; i < length ; i++) {
             const x = position ? xCor : xCor + i;
             const y = position ? yCor + i : yCor;
             let OccupiedSpot = `${x},${y}`;
 
-            if (set.has(OccupiedSpot) || spaceContainer.has(OccupiedSpot)) {
-                removedSpaces.forEach((cor) => spaceContainer.add(cor));
-                return false;
-            }
-
-            spacePos.push(OccupiedSpot);
-            set.add(OccupiedSpot);
-
             if (isRandom) {
+                if (set.has(OccupiedSpot) || spaceContainer.has(OccupiedSpot)) {
+                    return false;
+                }
+
+                spacePos.push(OccupiedSpot);
+                set.add(OccupiedSpot);
+
                 let addSpacing = [];
                 if (position) {
                     addSpacing = [`${x + 1},${y}`, `${x - 1},${y}`];
@@ -60,31 +64,20 @@ export function gameUtils() {
                 addSpacing.forEach((cor) => {
                     if (!set.has(cor)) spaceContainer.add(cor);
                 });
+            } else {
+                if (set.has(OccupiedSpot)) {
+                    return false;
+                }
+
+                set.add(OccupiedSpot);
             }
         }
-        spacePos.forEach((cor) => spaceContainer.add(cor));
+        if (isRandom) spacePos.forEach((cor) => spaceContainer.add(cor));
 
-        // console.log(holder)
+        
         return true;
     }
-    function removeSpace(xCor, yCor, length, position) {
-        let remove = [];
-        for (let i = 0; i < length; i++) {
-            const x = position ? xCor : xCor + i;
-            const y = position ? yCor + i : yCor;
-            let removeSpacing = [];
-            if (position) {
-                removeSpacing = [`${x},${y}`, `${x + 1},${y}`, `${x - 1},${y}`];
-            } else {
-                removeSpacing = [`${x},${y}`, `${x},${y - 1}`, `${x},${y + 1}`];
-            }
 
-            remove.push(...removeSpacing);
-        }
-
-        remove.forEach((cor) => spaceContainer.delete(cor));
-        return remove;
-    }
     function possibleShots() {
         const arr1 = Array.from({ length: 10 }, (_, i) => i);
         const arr2 = Array.from({ length: 10 }, (_, i) => i);
@@ -93,7 +86,7 @@ export function gameUtils() {
             for (let v = 0; v < arr2.length; v++) {
                 const x = arr1[i];
                 const y = arr2[v];
-                if ((x + y) % 2 === 0) validShots.push({ xCor: x, yCor: y });
+                validShots.push({ xCor: x, yCor: y });
             }
         }
         return shuffle(validShots);
@@ -105,7 +98,7 @@ export function gameUtils() {
             let j = Math.floor(Math.random() * (i + 1));
             [newArr[i], newArr[j]] = [newArr[j], newArr[i]];
         }
-        // console.log(newArr);
+       
         return newArr;
     }
     return {

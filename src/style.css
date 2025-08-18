@@ -69,7 +69,7 @@ main {
 
 
 p {
-  max-width: 60ch;
+  max-width: 100%;
   line-height: 1.7;
 }
 
@@ -111,7 +111,7 @@ button {
 .board-container {
   display: flex;
   flex-wrap: wrap;
-  width: 90%;
+  width: 100%;
   /* min-width: 300px; */
   gap: 1rem;
   justify-content: center;
@@ -119,7 +119,7 @@ button {
   position: relative;
   /* flex: 1; */
   padding: 1rem;
-  height: 70%;
+  
   max-width: 1024px;
 
 
@@ -140,10 +140,12 @@ button {
 
 .board {
   display: grid;
-  grid-template-columns: repeat(10, 1fr);
-  min-width: 300px;
-  min-height: 350px;
+  grid-template-columns: repeat(10, minmax(30px,1fr));
+  grid-template-rows: repeat(10, minmax(30px,1fr));
+  /* min-width: 350px;
+  min-height: 350px; */
   flex: 1;
+  aspect-ratio: 1;
 
 
   /* align-content: start; */
@@ -466,13 +468,14 @@ form input[type="text"]:focus {
   position: absolute;
   inset: 0;
   margin-inline: auto;
+  min-height: fit-content; 
   width: 100%;
   height: 100%;
-  background-color: lightblue;
+  
   background-color: var(--blue-20);
-  /* background-color: var(--green-30); */
+
   color: var(--white-100);
-  /* color: white; */
+  
   padding: 3rem;
   gap: 2.5rem;
   border-radius: 14px;
@@ -483,6 +486,7 @@ form input[type="text"]:focus {
   font-weight: 400;
   font-family: var(--ff-1);
   letter-spacing: 2px;
+ 
 }
 
 
@@ -491,16 +495,18 @@ form input[type="text"]:focus {
   font-weight: 600;
   /* text-decoration: underline; */
   text-transform: uppercase;
-  text-align: center;
+  /* text-align: center; */
   z-index: 5;
   word-break: break-word;
   font-family: var(--ff-1);
+  width: 70%;
 
 
 }
 
 .authorization__body {
   font-size: 1.25rem;
+  color: var(--white-80);
   /* font-weight: 300; */
 
 }
@@ -572,12 +578,15 @@ form input[type="text"]:focus {
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
+  gap: 1rem;
   
 }
 
 .analytics__update {
   display: flex;
   justify-content: space-between;
+  flex-wrap: wrap;
+
 }
 
 .live-update {
