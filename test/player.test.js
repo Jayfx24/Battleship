@@ -13,14 +13,14 @@ describe('Player class test', () => {
         expect(aiPlayer.gameBoard).toHaveProperty('placeShip');
         expect(aiPlayer.gameBoard).toHaveProperty('isAllShipSunk');
         expect(aiPlayer.type).toBe('computer');
-        expect(aiPlayer.playerName).toBe('Test1');
+        expect(aiPlayer.name).toBe('Test1');
     });
 
     test('initialize real type of Player instance', () => {
         expect(realPlayer.gameBoard).toHaveProperty('placeShip');
         expect(realPlayer.gameBoard).toHaveProperty('isAllShipSunk');
         expect(realPlayer.type).toBe('real');
-        expect(realPlayer.playerName).toBe('James');
+        expect(realPlayer.name).toBe('James');
     });
 
     test('each player a unique instance', () => {

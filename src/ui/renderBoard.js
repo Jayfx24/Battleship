@@ -42,7 +42,7 @@ export class createGame {
         this.boundRotate = this.rotateShip.bind(this);
         this.boundCorClick = this.#handleBoxClick.bind(this);
         this.orientation = true;
-        
+
         this.vsBot = null;
     }
 
@@ -102,7 +102,6 @@ export class createGame {
             this.#resetBoardUI();
         });
         this.utils.clearShipPos();
-        this.utils.resetShipCoord();
     }
 
     #handleBoxClick(e) {
@@ -117,7 +116,6 @@ export class createGame {
             cor.classList.contains('ship-hit')
         )
             return;
-       
 
         const shipEle = cor?.querySelector('.ship');
         console.log(shipEle);
@@ -160,10 +158,7 @@ export class createGame {
         this.#gameTurn();
 
         if (this.vsBot && this.gameStarted) {
-            elements.boardTwo.removeEventListener(
-                'click',
-                this.boundCorClick,
-            );
+            elements.boardTwo.removeEventListener('click', this.boundCorClick);
             setTimeout(() => {
                 this.botTurn();
             }, 2000);
@@ -233,21 +228,14 @@ export class createGame {
         elements.boardOne.innerHTML = '';
         elements.boardTwo.innerHTML = '';
 
-        createBoardUI(
-            this.playerOne.gameBoard.getBoard(),
-            elements.boardOne,
-        );
-        createBoardUI(
-            this.playerTwo.gameBoard.getBoard(),
-            elements.boardTwo,
-        );
+        createBoardUI(this.playerOne.gameBoard.getBoard(), elements.boardOne);
+        createBoardUI(this.playerTwo.gameBoard.getBoard(), elements.boardTwo);
 
         if (this.vsBot) {
             elements.boardTwoWrapper
                 .querySelectorAll('.ship')
                 .forEach((el) => el.classList.add('no-visibility'));
         }
-    
     }
 
     #shipStorage(parent, pClass = 'ship-holder', childClass = 'ship-layer') {
@@ -285,7 +273,7 @@ export class createGame {
                 el.style.visibility = 'visible';
             });
         });
-       
+
         elements.boardWrappers.forEach((el) =>
             el.addEventListener('click', this.boundRotate),
         );
@@ -310,10 +298,7 @@ export class createGame {
             this.boundMouseMove,
         );
 
-        elements.boardContainer.addEventListener(
-            'mouseup',
-            this.boundMouseUp,
-        );
+        elements.boardContainer.addEventListener('mouseup', this.boundMouseUp);
     }
 
     mouseMove(e) {
@@ -336,7 +321,6 @@ export class createGame {
         this.dragTarget(e);
 
         this.currentDraggable = null;
-     
     }
     dragTarget(e) {
         e.preventDefault();
@@ -406,7 +390,6 @@ export class createGame {
                 confirmPlacement(firstPlayer);
                 (clickProcess = () => this.#handleAfterPlacement()),
                     this.#placeShip(this.playerTwo);
-               
             } else {
                 if (this.currentPlayerPlacement === this.playerOne) {
                     firstPlayer = true;
@@ -484,7 +467,7 @@ export class createGame {
     }
     #handleAfterPlacement() {
         elements.randomizeBtns.forEach((el) => el.parentNode.remove());
-       
+
         component.authorization.article.style.visibility = 'hidden';
 
         elements.analytics.parent.classList.remove('no-visibility');
@@ -516,11 +499,7 @@ export class createGame {
         );
         if (this.vsBot) {
             elements.boardTwoWrapper.style.display = '';
-            elements.boardTwo.addEventListener(
-                'click',
-                this.boundCorClick,
-            );
-            
+            elements.boardTwo.addEventListener('click', this.boundCorClick);
         } else {
             this.targetBoard.addEventListener('click', this.boundCorClick);
             elements.boardOne.classList.add('disabled');
@@ -547,9 +526,8 @@ export class createGame {
         this.playerOne.name = elements.playerOne.name.textContent = pOne;
         this.playerTwo.name = elements.playerTwo.name.textContent = pTwo;
         const instruction = 'Click ship on board to rotate';
-        elements.instructions.forEach(
-            (el) => (el.textContent = instruction),
-        );
+        elements.instructions.forEach((el) => (el.textContent = instruction));
+        component.playerSetts.style.order = 1;
         this.#shipStorage(component.placeHolder);
         component.playerSetts.appendChild(component.placeHolder);
         this.#dragStart();
@@ -570,7 +548,6 @@ export class createGame {
 
         return true;
     }
-
 
     rotateShip(e) {
         const ships = this.#shipsInfo();

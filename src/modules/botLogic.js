@@ -27,7 +27,7 @@ export class botPlay {
     listener(shipHit, isSunk) {
         if (shipHit || this.isAfloat) {
             if (this.initialHit == null) this.initialHit = this.currentShot;
-            // only turns afloat m followUpHit on first hit
+            // only turns afloat n followUpHit after first hit
             this.isAfloat = true;
             this.followUpHit = true;
             if (!shipHit) {
@@ -41,14 +41,11 @@ export class botPlay {
             if (isSunk) {
                 this.resetTracking();
             }
-            
         }
     }
     nextShot() {
         if (this.followUpHit) {
             // activates for second hit
-            // 3rd now
-
             const nextShot = this.isHit();
 
             if (nextShot) {
@@ -68,7 +65,6 @@ export class botPlay {
     }
 
     isHit() {
-       
         const { xCor, yCor } = this.currentShot;
 
         const moves = {

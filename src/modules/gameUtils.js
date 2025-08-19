@@ -1,7 +1,6 @@
 // generate random coordinates
 
 export function gameUtils() {
-    let shipCoord = possibleShots();
     let max = 10;
     let min = 0;
     let shipPos = new Set();
@@ -110,7 +109,6 @@ export function gameUtils() {
             shipPos.clear();
             spaceContainer.clear();
         },
-        resetShipCoord: () => (shipCoord = possibleShots()),
         isEmpty,
     };
 }

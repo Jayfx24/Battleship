@@ -154,8 +154,8 @@ button {
   display: flex;
   border-radius: 1rem;
   flex: 1;
-  /* border: 1px solid; */
   padding: 2.5rem 0.3rem;
+  order: -1;
 }
 
 
@@ -222,17 +222,19 @@ button {
   box-shadow: 3px 3px 1rem var(--shadow-md);
   gap: 3rem;
   border-radius: 14px;
-  color: var(--white-80);
+  color: var(--white-100);
 }
 
 .confirmation p {
   font-size: 1.25rem;
 }
 
-.confirmation button {
-  color: white;
+.confirmation__btn {
+  color: var(--white-100);
   margin-top: auto;
 }
+
+
 
 .ship-layer {
   display: flex;
@@ -298,8 +300,11 @@ button {
 }
 
 button:hover {
-  opacity: 0.7;
+  opacity: 0.6;
 }
+
+
+
 
 .board__button--reset {
   background-color: gray;
@@ -405,9 +410,7 @@ form input[type="text"]:focus {
 }
 
 .form__button,
-.confirmation button {
-  background-color: var(--blue-40);
-  color: var(--blue-20);
+.confirmation__btn {
   padding-block: 1rem;
   font-size: 1.25rem;
   text-transform: uppercase;
@@ -417,6 +420,11 @@ form input[type="text"]:focus {
   transition: background-color 0.3s ease-out;
 }
 
+.form__button{
+  color: var(--blue-20);
+  background-color: var(--blue-40);
+
+}
 .form__button:hover {
   color: var(--white-100);
   opacity: 1;

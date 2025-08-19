@@ -246,8 +246,10 @@ export function confirmPlacement(playerOne) {
     const btnTxt = playerOne ? 'Pass device' : 'Start Game';
 
     btn.textContent = btnTxt;
-    btn.style.color = playerOne ? 'darkblue' : 'white';
-    btn.style.backgroundColor = playerOne ? 'blue' : 'hsla(119, 98%, 30%, 1)';
+    // btn.style.color = playerOne ? 'darkblue' : 'white';
+    btn.style.backgroundColor = playerOne ? 'hsla(245, 82%, 20%, 1)' : 'hsla(119, 98%, 30%, 1)';
+    parent.style.backgroundColor = playerOne ? 'hsla(245, 82%, 20%, 1)' : 'hsla(119, 98%, 30%, 1)';
+    btn.classList.add('confirmation__btn')
     component.confirmPlacement.parent.appendChild(text);
     component.confirmPlacement.parent.appendChild(btn);
     component.playerSetts.appendChild(component.confirmPlacement.parent);

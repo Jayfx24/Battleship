@@ -3,7 +3,6 @@ import hit from '../assets/audio/explosion.mp3';
 import sunk from '../assets/audio/destroyed.mp3';
 import victory from '../assets/audio/victory.mp3';
 import defeat from '../assets/audio/defeat.mp3';
-import click from '../assets/audio/mouse-click-290204.mp3';
 
 
 
@@ -23,7 +22,7 @@ export const audio = {
   sunk: () => createSound(sunk),
   victory: () => createSound(victory),
   defeat: () => createSound(defeat),
-  click: () => createSound(click),
+
 };
 
 
