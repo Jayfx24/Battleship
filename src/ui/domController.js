@@ -302,11 +302,11 @@ export function initiatePassing(title, body, btnTxt) {
 export function showLiveUpdates(ship) {
     let liveResponse;
     if (!ship) {
-        liveResponse = 'We missed, Admiral';
+        liveResponse = "Missed! The enemy remains unscathed, Admiral.";
     } else if (ship.isSunk()) {
-        liveResponse = `Enemy ${ship.name} Sunk`;
+        liveResponse = `Direct hit! Enemy ${ship.name} has been sunk.`;
     } else {
-        liveResponse = `we have hit their ${ship.name}`;
+        liveResponse = `Hit confirmed! Enemy ${ship.name} has been struck.`;
     }
 
     elements.analytics.liveUpdate.textContent = liveResponse;

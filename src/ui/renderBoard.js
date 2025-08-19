@@ -52,7 +52,7 @@ export class createGame {
 
         // volume state
         let soundOn = true;
-        setAudio(true, 0.2);
+        setAudio(true, 0.5);
 
         const handleVol = () => {
             soundOn = !soundOn;
@@ -500,6 +500,8 @@ export class createGame {
         if (this.vsBot) {
             elements.boardTwoWrapper.style.display = '';
             elements.boardTwo.addEventListener('click', this.boundCorClick);
+            this.targetBoard.style.cursor = 'crosshair';
+
         } else {
             this.targetBoard.addEventListener('click', this.boundCorClick);
             elements.boardOne.classList.add('disabled');

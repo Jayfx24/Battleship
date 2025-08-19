@@ -7,10 +7,9 @@ function app() {
     game.game();
 }
 
-// document.addEventListener("DOMContentLoaded",app)
 app()
 
-// window.addEventListener("DOMContentLoaded", () => {
-// document.body.style.visibility = "visible";
-// });
+window.addEventListener("DOMContentLoaded", () => {
+document.body.style.visibility = "visible";
+});
 
