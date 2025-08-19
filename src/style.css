@@ -64,7 +64,6 @@ main {
 
 p {
   max-width: 100%;
-  line-height: 1.7;
 }
 
 img {
@@ -93,7 +92,7 @@ button {
   width: 100%;
   padding: 1rem;
   align-items: center;
-  gap: 1rem;
+  gap: .5rem;
   overflow-y: auto;
   
 }
@@ -123,7 +122,7 @@ button {
   position: relative;
   flex: 1;
   gap: .25rem;
-  padding: .5rem;
+  padding: 0 0.5rem;
 
 }
 
@@ -132,9 +131,6 @@ button {
   grid-template-columns: repeat(10, minmax(35px, 1fr));
   grid-template-rows: repeat(10, minmax(35px, 1fr));
   aspect-ratio: 1;
-
-
-
 }
 
 .cor {
@@ -256,19 +252,17 @@ button {
 }
 
 
-.board__controls,
-.board__player-info {
+.board__controls,.board__player-info{
   display: flex;
   justify-content: space-between;
   padding: .25rem 0;
   width: 100%;
-  min-height: 2.5rem;
   flex-wrap: wrap;
+
 }
 
 .board__player-info {
- 
-  padding: .3rem;
+  min-height: 1rem;
   font-weight: 600;
 }
 
@@ -462,7 +456,7 @@ form input[type="text"]:focus {
 
 
 .authorization__title {
-  font-size: clamp(1rem, 1.875rem, 4rem);
+  font-size: 1.5rem;
   font-weight: 600;
   text-decoration: underline;
   text-underline-offset: .5rem;
@@ -476,7 +470,7 @@ form input[type="text"]:focus {
 }
 
 .authorization__body {
-  font-size: 1.25rem;
+  font-size: 1rem;
   color: var(--white-80);
  
 
@@ -535,7 +529,7 @@ form input[type="text"]:focus {
 .analytics {
 
   width: 100%;
-  padding: 1.5rem;
+  padding: 0 1.5rem;
 
   font-weight: 700;
   border-radius: inherit;
@@ -553,6 +547,9 @@ form input[type="text"]:focus {
 
 }
 
+.analytics__title{
+  font-size: 1rem;
+}
 .live-update {
   visibility: visible;
   font-size: 1.5rem;
@@ -568,7 +565,7 @@ form input[type="text"]:focus {
 }
 
 .analytics__texts {
-  margin-bottom: 1rem;
+  /* margin-bottom: 1rem; */
 }
 
 .analytics__texts>span {
@@ -576,9 +573,9 @@ form input[type="text"]:focus {
   font-weight: 700;
 }
 
-.analytics__texts>p {
-  font-size: .9rem;
-  font-weight: 500;
+.current-player,.player-info__name {
+  font-size: .875rem;
+  /* font-weight: 500; */
 
 }
 

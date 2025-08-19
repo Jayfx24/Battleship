@@ -134,8 +134,8 @@ export class createGame {
         if (isValidTarget) {
             const isSunk = ship.isSunk();
 
-            if (isSunk) audio.sunk().play();
-            else audio.hit().play();
+            if (isSunk) audio.sunk();
+            else audio.hit();
 
             shipEle.classList.add('ship-hit');
             shipEle.classList.remove('no-visibility');
@@ -146,7 +146,7 @@ export class createGame {
             this.updateShipHealth(type, part, ship.isSunk());
         } else if (invalid.includes(ship)) {
             cor.classList.add('missed');
-            audio.miss().play();
+            audio.miss();
 
             showLiveUpdates(false);
         }
@@ -196,7 +196,7 @@ export class createGame {
 
         const isOver = () => {
             if (this.vsBot && player.type == 'real') {
-                audio.defeat().play();
+                audio.defeat();
                 const msg = messages.AIwin;
                 console.log(player);
                 console.log(msg);
@@ -206,7 +206,7 @@ export class createGame {
                     msg.btn,
                 );
             } else {
-                audio.victory().play();
+                audio.victory();
                 const msg = messages.winner;
                 initiatePassing(
                     msg.title(winner.name),
@@ -639,8 +639,8 @@ export class createGame {
             shipHit = true;
             isSunk = ship.isSunk();
             const activeShip = cor.querySelector(`.ship`);
-            if (isSunk) audio.sunk().play();
-            else audio.hit().play();
+            if (isSunk) audio.sunk();
+            else audio.hit();
 
             activeShip.classList.add('ship-hit');
             activeShip.classList.remove('no-visibility');
@@ -650,7 +650,7 @@ export class createGame {
 
             this.updateShipHealth(type, part, isSunk);
         } else {
-            audio.miss().play();
+            audio.miss();
 
             cor.classList.add('missed');
         }

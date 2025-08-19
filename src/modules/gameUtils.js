@@ -15,7 +15,7 @@ export function gameUtils() {
             throw new Error('Orientation/direction not added');
         const maxRetries = 100;
         
-        for ( let i = 0; i < maxRetries;i++) {
+        for ( let i = 1; i < maxRetries;i++) {
             const xCor = generateRandInt();
             const yCor = generateRandInt();
 
@@ -24,8 +24,6 @@ export function gameUtils() {
             if (mainAxis + length - 1 < max)
                 if (isEmpty(shipPos, xCor, yCor, length, position, isRandom)) {
                     return { xCor, yCor };
-                }else{
-                    console.log(i)
                 }
             
         }
@@ -35,7 +33,7 @@ export function gameUtils() {
 
     function isEmpty(set, xCor, yCor, length, position, isRandom = false) {
         let spacePos = [];
-
+        
         for (let i = 0; i < length ; i++) {
             const x = position ? xCor : xCor + i;
             const y = position ? yCor + i : yCor;
