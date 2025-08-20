@@ -83,7 +83,6 @@ export class botPlay {
             const newY = yCor + y;
             const nextShot = this.positionChecker(newX, newY);
 
-            console.log(nextShot);
 
             if (!nextShot && this.shipHit) {
                 this.currentShot = this.initialHit;

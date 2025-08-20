@@ -41,6 +41,7 @@ export class createGame {
         this.boundMouseUp = this.mouseUp.bind(this);
         this.boundRotate = this.rotateShip.bind(this);
         this.boundCorClick = this.#handleBoxClick.bind(this);
+        this.boundApproval = this.afterApproval.bind(this);
         this.orientation = true;
 
         this.vsBot = null;
@@ -118,7 +119,7 @@ export class createGame {
             return;
 
         const shipEle = cor?.querySelector('.ship');
-        console.log(shipEle);
+
         // send Cor
 
         const xCor = cor.dataset.xCor;
@@ -144,20 +145,21 @@ export class createGame {
             const part = target.dataset.part || shipEle.dataset.part;
             const type = target.dataset.type || shipEle.dataset.type;
             this.updateShipHealth(type, part, ship.isSunk());
-        } else if (invalid.includes(ship)) {
+            this.#isGameOver(this.targetPlayer);
+        } else {
             cor.classList.add('missed');
             audio.miss();
-
+            this.targetBoard.classList.add('disabled');
             showLiveUpdates(false);
-        }
-        if (!this.vsBot) {
-            this.passLogic();
-            parent.classList.add('disabled');
-        }
-        this.#isGameOver(this.targetPlayer);
-        this.#gameTurn();
+            if (!this.vsBot) {
+                this.passLogic();
+            }else{
+                this.#gameTurn()
 
-        if (this.vsBot && this.gameStarted) {
+            }
+        }
+
+        if (this.vsBot && this.gameStarted && this.targetPlayer === this.playerOne) {
             elements.boardTwo.removeEventListener('click', this.boundCorClick);
             setTimeout(() => {
                 this.botTurn();
@@ -172,8 +174,8 @@ export class createGame {
                 : this.playerOne;
         this.targetBoard =
             this.targetPlayer === this.playerOne
-                ? elements.boardTwo
-                : elements.boardOne;
+                ? elements.boardOne
+                : elements.boardTwo;
 
         // toggle again to set current player
         this.currentPlayer =
@@ -185,6 +187,8 @@ export class createGame {
             this.targetBoard === elements.boardOne
                 ? elements.boardTwo
                 : elements.boardOne;
+
+       
     }
 
     #isGameOver(player) {
@@ -198,8 +202,7 @@ export class createGame {
             if (this.vsBot && player.type == 'real') {
                 audio.defeat();
                 const msg = messages.AIwin;
-                console.log(player);
-                console.log(msg);
+
                 initiatePassing(
                     msg.title(player.name),
                     msg.body(player.name),
@@ -497,16 +500,15 @@ export class createGame {
             'mousedown',
             this.boundOnBoard,
         );
+        this.targetBoard.style.cursor = 'crosshair';
         if (this.vsBot) {
             elements.boardTwoWrapper.style.display = '';
             elements.boardTwo.addEventListener('click', this.boundCorClick);
-            this.targetBoard.style.cursor = 'crosshair';
-
         } else {
             this.targetBoard.addEventListener('click', this.boundCorClick);
             elements.boardOne.classList.add('disabled');
             this.updateBoardOpp();
-            this.targetBoard.style.cursor = 'crosshair';
+         
             this.nextBoard.style.cursor = 'crosshair';
         }
     }
@@ -622,7 +624,7 @@ export class createGame {
     }
 
     botTurn() {
-        if (this.targetPlayer !== this.playerOne) return;
+        if (this.targetPlayer !== this.playerOne || !this.gameStarted) return;
         const { xCor, yCor } = this.botPlay.nextShot();
         const tPlayer = this.targetPlayer.gameBoard.getBoard()[xCor][yCor];
         let ship = tPlayer;
@@ -635,12 +637,25 @@ export class createGame {
             `.cor[data-x-cor = "${xCor}"][data-y-cor = "${yCor}"]`,
         );
 
-        if (!invalid.includes(ship)) {
+        if (invalid.includes(ship)) {
+            audio.miss();
+            cor.classList.add('missed');
+            this.nextBoard.classList.remove('disabled');
+           
+            this.#gameTurn();
+
+            elements.boardTwo.addEventListener('click', this.boundCorClick);
+
+            this.prevPlayer = this.currentPlayer;
+            this.prevPBoard = this.targetBoard;
+            this.botPlay.listener(shipHit, isSunk);
+        } else {
             shipHit = true;
             isSunk = ship.isSunk();
             const activeShip = cor.querySelector(`.ship`);
             if (isSunk) audio.sunk();
             else audio.hit();
+            
 
             activeShip.classList.add('ship-hit');
             activeShip.classList.remove('no-visibility');
@@ -649,18 +664,13 @@ export class createGame {
             const type = activeShip.dataset.type;
 
             this.updateShipHealth(type, part, isSunk);
-        } else {
-            audio.miss();
 
-            cor.classList.add('missed');
+            this.#isGameOver(this.targetPlayer);
+            this.botPlay.listener(shipHit, isSunk);
+            setTimeout(() => {
+                this.botTurn();
+            }, 2000);
         }
-        this.prevPlayer = this.currentPlayer;
-        this.prevPBoard = this.targetBoard;
-
-        this.botPlay.listener(shipHit, isSunk);
-        this.#isGameOver(this.targetPlayer);
-        this.#gameTurn();
-        elements.boardTwo.addEventListener('click', this.boundCorClick);
     }
 
     updateShipHealth(type, part, isSSunk = false) {
@@ -668,6 +678,7 @@ export class createGame {
 
         let hitPart = null;
         // updates analytics
+
         if (this.targetPlayer === this.playerOne) {
             hitPart = elements.analytics.one.querySelector(
                 `.${type}[data-part ="${part}"]`,
@@ -681,7 +692,7 @@ export class createGame {
         // if isSunk
 
         if (isSSunk)
-            this.nextBoard
+            this.targetBoard
                 .querySelectorAll(`[data-type ="${type}"]`)
                 .forEach((el) => el.classList.add('sunk'));
 
@@ -701,46 +712,8 @@ export class createGame {
             );
             this.targetBoard.classList.add('disabled');
 
-            let p1, p2;
-            this.currentPlayer === this.playerOne
-                ? ((p1 = 'Your Ship'), (p2 = 'Enemy ships'))
-                : ((p2 = 'Your Ship'), (p1 = 'Enemy ships'));
-            elements.analytics.currentPlayerOne.textContent = p1;
-            elements.analytics.currentPlayerTwo.textContent = p2;
-
-            const order = this.currentPlayer === this.playerOne ? 2 : -1;
-
-            elements.analytics.infoTwo.style.order = order;
-
             elements.analytics.liveUpdate.textContent = '';
             component.authorization.article.style.visibility = 'visible';
-            component.authorization.btn.addEventListener(
-                'click',
-                afterApproval,
-            );
-        };
-
-        const afterApproval = () => {
-            component.authorization.article.style.visibility = 'hidden';
-            elements.boardContainer.classList.remove('no-visibility');
-            this.updateBoardOpp();
-            this.targetBoard.removeEventListener('click', this.boundCorClick);
-
-            this.nextBoard.querySelectorAll('.ship').forEach((el) => {
-                if (!el.classList.contains('ship-hit'))
-                    el.classList.add('no-visibility');
-            });
-            this.targetBoard
-                .querySelectorAll('.ship')
-                .forEach((el) => el.classList.remove('no-visibility'));
-            this.nextBoard.addEventListener('click', this.boundCorClick);
-            this.nextBoard.classList.remove('disabled');
-            this.targetBoard.classList.add('disabled');
-
-            component.authorization.btn.removeEventListener(
-                'click',
-                afterApproval,
-            );
         };
 
         const btn =
@@ -748,7 +721,7 @@ export class createGame {
                 ? elements.boardPass.one
                 : elements.boardPass.two;
         const btnMsg =
-            this.targetPlayer === this.playerOne
+            this.currentPlayer === this.playerOne
                 ? 'Pass device to Player Two'
                 : 'Pass device to Player One';
 
@@ -756,7 +729,51 @@ export class createGame {
         setTimeout(() => {
             btn.classList.remove('hide');
             btn.addEventListener('click', initialPass);
+            component.authorization.btn.addEventListener(
+                'click',
+                this.boundApproval,
+            );
         }, 1000);
+    }
+    afterApproval() {
+        component.authorization.btn.removeEventListener(
+            'click',
+            this.boundApproval,
+        );
+
+        //
+
+        component.authorization.article.style.visibility = 'hidden';
+        elements.boardContainer.classList.remove('no-visibility');
+        this.updateBoardOpp();
+        this.targetBoard.removeEventListener('click', this.boundCorClick);
+
+        this.nextBoard.querySelectorAll('.ship').forEach((el) => {
+            if (!el.classList.contains('ship-hit'))
+                el.classList.add('no-visibility');
+        });
+
+        this.targetBoard
+            .querySelectorAll('.ship')
+            .forEach((el) => el.classList.remove('no-visibility'));
+        this.nextBoard.addEventListener('click', this.boundCorClick);
+        this.nextBoard.classList.remove('disabled');
+        this.targetBoard.classList.add('disabled');
+
+        //
+       
+        this.#gameTurn();
+
+        let p1, p2;
+        this.currentPlayer === this.playerOne
+            ? ((p1 = 'Your Ship'), (p2 = 'Enemy ships'))
+            : ((p2 = 'Your Ship'), (p1 = 'Enemy ships'));
+        elements.analytics.currentPlayerOne.textContent = p1;
+        elements.analytics.currentPlayerTwo.textContent = p2;
+
+        const order = this.currentPlayer === this.playerOne ? 2 : -1;
+       
+        elements.analytics.infoTwo.style.order = order;
     }
 
     updateBoardOpp() {

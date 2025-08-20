@@ -272,8 +272,11 @@ export function afterPlacement() {
 }
 
 export function initiatePassing(title, body, btnTxt) {
+
+
     const passInfo = component.authorization;
     const article = passInfo.article;
+    article.innerHTML = ''
     elements.boardContainer.classList.add('no-visibility');
 
     article.classList.add('authorization');
